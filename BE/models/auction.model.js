@@ -1,40 +1,35 @@
 const mongoose = require("mongoose");
 
-const paymentSchema = new mongoose.Schema({
-  payerID: {
+const auctionSchema = new mongoose.Schema({
+  jewelryID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Jewelry",
+    required: true,
+  },
+  staffID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  paymentMethod: {
-    type: String,
-    enum: ["Credit Card", "PayPal", "Bank Transfer"], // Payment methods
+  startTime: {
+    type: Date, // Correct type for timestamp
     required: true,
   },
-  auctionID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Auction",
-    required: true,
-  },
-  amount: {
-    type: Number,
+  endTime: {
+    type: Date, // Correct type for timestamp
     required: true,
   },
   status: {
     type: String,
-    enum: ["Pending", "Completed", "Failed"], // Status options
+    enum: ["Scheduled", "Ongoing", "Completed", "Cancelled"], // Status options
     required: true,
   },
-  jewelryStatus: {
-    type: String,
-    enum: ["Packaging", "Delivery", "Delivered"], // Jewelry shipment status options
+  winner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: false,
-  },
-  paytime: {
-    type: Date, // Correct type for timestamp
-    required: true,
   },
 });
 
-const Payment = mongoose.model("Payment", paymentSchema);
-module.exports = Payment;
+const Auction = mongoose.model("Auction", auctionSchema);
+module.exports = Auction;

@@ -39,7 +39,18 @@ const jewelrySchema = new mongoose.Schema({
     enum: ["Pending", "Valuated", "Approved", "Rejected", "Auctioned", "Sold"], // Status options
     required: true,
   },
+  image: {
+    type: String,
+    validate: {
+      validator: function (v) {
+        return /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid URL!`,
+    },
+    required: [true, "Image URL required"],
+  },
 });
 
-const Jewelry = mongoose.model("Jewelry", jewelrySchema);
+const Jewelry =
+  mongoose.models.Jewelry || mongoose.model("Jewelry", jewelrySchema);
 module.exports = Jewelry;

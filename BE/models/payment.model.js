@@ -8,7 +8,7 @@ const paymentSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ["Credit Card", "PayPal", "Bank Transfer"], // Payment methods
+    enum: ["Credit Card", "PayPal", "Bank Transfer"],
     required: true,
   },
   auctionID: {
@@ -22,19 +22,20 @@ const paymentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "Completed", "Failed"], // Status options
+    enum: ["Pending", "Completed", "Failed"],
     required: true,
   },
   jewelryStatus: {
     type: String,
-    enum: ["Packaging", "Delivery", "Delivered"], // Jewelry shipment status options
+    enum: ["Packaging", "Delivery", "Delivered"],
     required: false,
   },
   paytime: {
-    type: Date, // Correct type for timestamp
+    type: Date,
     required: true,
   },
 });
 
-const Payment = mongoose.model("Payment", paymentSchema);
+const Payment =
+  mongoose.models.Payment || mongoose.model("Payment", paymentSchema);
 module.exports = Payment;
