@@ -49,6 +49,24 @@ const jewelrySchema = new mongoose.Schema({
     },
     required: [true, "Image URL required"],
   },
+  category: {
+    type: String,
+    enum: [
+      "Necklace",
+      "Ring",
+      "Earring",
+      "Bracelet",
+      "Brooch",
+      "Pendant",
+      "Anklet",
+      "Cufflink",
+    ],
+    required: true,
+  },
+  feedback: {
+    type: Array,
+    required: false,
+  },
 });
 
 const Jewelry =
