@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const mongoose = require("mongoose");
@@ -10,6 +11,7 @@ const auctionRoute = require("./routes/auctions.route");
 const paymentRoute = require("./routes/payments.route");
 const userRoutes = require("./routes/users.route");
 
+app.use(cors());
 app.use("/user", userRoutes);
 app.use("/jewelry", jewelryRoutes);
 app.use("/bid", bidRoutes);

@@ -1,50 +1,45 @@
 import Carousel from "react-bootstrap/Carousel";
 import Button from "react-bootstrap/Button";
 import { Row } from "react-bootstrap";
-
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../UserContext";
+import { useContext } from "react";
 function Carouseler() {
+  const nav = useNavigate();
+  const { user, setUser, menu, setMenu } = useContext(UserContext);
+  const carouselItems = [
+    {
+      src: "https://images.creativemarket.com/0.1.0/ps/11222366/1820/1124/m1/fpnw/wm1/fpuftjp6pyznzhanjwq44saln1r1ofin3zkpolucie1qwgoihdpzsawckysholut-.jpg?1635838366&s=285312c188752bcea2578bc2947375b2",
+      alt: "First slide",
+    },
+    {
+      src: "http://getwallpapers.com/wallpaper/full/c/c/b/417876.jpg",
+      alt: "Second slide",
+    },
+    {
+      src: "https://wallpapers.com/images/hd/jewelry-background-t5inm8ksiovejqso.jpg",
+      alt: "Third slide",
+    },
+  ];
+
   return (
     <>
       <Carousel data-bs-theme="dark" style={{ position: "relative" }}>
-        <Carousel.Item>
-          <img
-            className="d-block w-100"
-            src="https://images.creativemarket.com/0.1.0/ps/11222366/1820/1124/m1/fpnw/wm1/fpuftjp6pyznzhanjwq44saln1r1ofin3zkpolucie1qwgoihdpzsawckysholut-.jpg?1635838366&s=285312c188752bcea2578bc2947375b2"
-            alt="First slide"
-            style={{
-              width: "70vh",
-              height: "70vh",
-              padding: "0px 200px",
-              margin: "50px 0px",
-            }}
-          />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img
-            className="d-block w-100"
-            src="http://getwallpapers.com/wallpaper/full/c/c/b/417876.jpg"
-            alt="Second slide"
-            style={{
-              width: "70vh",
-              height: "70vh",
-              padding: "0px 200px",
-              margin: "50px 0px",
-            }}
-          />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img
-            className="d-block w-100"
-            src="https://wallpapers.com/images/hd/jewelry-background-t5inm8ksiovejqso.jpg"
-            alt="Third slide"
-            style={{
-              width: "70vh",
-              height: "70vh",
-              padding: "0px 200px",
-              margin: "50px 0px",
-            }}
-          />
-        </Carousel.Item>
+        {carouselItems.map((item, index) => (
+          <Carousel.Item key={index}>
+            <img
+              className="d-block w-100"
+              src={item.src}
+              alt={item.alt}
+              style={{
+                width: "100vh",
+                height: "90vh",
+                padding: "0px 0px",
+                margin: "50px 0px",
+              }}
+            />
+          </Carousel.Item>
+        ))}
       </Carousel>
 
       <div
@@ -55,10 +50,11 @@ function Carouseler() {
           border: "1px solid #f1f1f1",
           padding: "20px 50px",
           position: "absolute",
-          top: "80%",
+          top: "95%",
           left: "50%",
           transform: "translate(-50%, -50%)",
           textAlign: "center",
+          borderRadius: 10,
         }}
       >
         <span
@@ -74,13 +70,47 @@ function Carouseler() {
           HERE
         </span>
         <br />
-        <Row style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <Button variant="outline-info" style={{ maxWidth: "30%" }}>
-            Explore and Bid Now
-          </Button>
-          <Button variant="outline-success" style={{ maxWidth: "30%" }}>
-            Auction a jewelry
-          </Button>
+        <Row
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+          }}
+        >
+          <div>
+            <Button
+              variant="outline-info"
+              style={{ width: "30%", marginBottom: 5 }}
+              onClick={() => {
+                const user = sessionStorage.getItem("user");
+                if (!user) {
+                  nav("/login");
+                  setMenu("");
+                } else {
+                  nav("/auction");
+                  setMenu("Auction");
+                }
+              }}
+            >
+              Explore and Bid Now
+            </Button>{" "}
+            <br />
+            <Button
+              variant="outline-success"
+              style={{ width: "30%" }}
+              onClick={() => {
+                const user = sessionStorage.getItem("user");
+                if (!user) {
+                  nav("/login");
+                  setMenu("");
+                } else {
+                  nav("/register");
+                  setMenu("");
+                }
+              }}
+            >
+              Auction a jewelry
+            </Button>
+          </div>
         </Row>
       </div>
     </>

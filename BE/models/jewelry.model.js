@@ -1,10 +1,62 @@
 const mongoose = require("mongoose");
 
+const auctionDetailsSchema = new mongoose.Schema({
+  initialValuation: {
+    value: Number,
+    staffID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  finalValuation: {
+    value: Number,
+    staffID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    managerID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  finalizedPrice: {
+    value: Number,
+    buyerID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  intermediateFee: {
+    type: Number,
+  },
+  intermediateFeeRate: {
+    type: Number,
+  },
+});
+
 const jewelrySchema = new mongoose.Schema({
-  ownerID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+  owner: {
+    ownerID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    fullName: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
   },
   name: {
     type: String,
@@ -14,29 +66,10 @@ const jewelrySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  initialValuation: {
-    type: Number,
-    required: false,
-  },
-  finalValuation: {
-    type: Number,
-    required: false,
-  },
-  finalizedPrice: {
-    type: Number,
-    required: false,
-  },
-  intermediateFee: {
-    type: Number,
-    required: false,
-  },
-  intermediateFeeRate: {
-    type: Number,
-    required: false,
-  },
+  auctionDetails: auctionDetailsSchema,
   status: {
     type: String,
-    enum: ["Pending", "Valuated", "Approved", "Rejected", "Auctioned", "Sold"], // Status options
+    enum: ["Pending", "Valuated", "Approved", "Rejected", "Auctioned", "Sold"],
     required: true,
   },
   image: {
@@ -67,8 +100,11 @@ const jewelrySchema = new mongoose.Schema({
     type: Array,
     required: false,
   },
+  statusUpdateDate: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const Jewelry =
-  mongoose.models.Jewelry || mongoose.model("Jewelry", jewelrySchema);
+const Jewelry = mongoose.model("Jewelry", jewelrySchema);
 module.exports = Jewelry;

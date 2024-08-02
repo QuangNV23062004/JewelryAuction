@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    required: true,
+  },
   role: {
     type: Number, // 1 for member (both seller and buyer), 2 for staff, 3 for owner
     required: true,

@@ -2,12 +2,15 @@ const Jewelry = require("../models/jewelry.model");
 
 const createJewelry = async (req, res) => {
   try {
+    console.log("Received data:", req.body);
     const jewelry = await Jewelry.create(req.body);
     res.status(201).json(jewelry);
   } catch (error) {
+    console.error("Error creating jewelry:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 const getAllJewelry = async (req, res) => {
   try {
     const jewelry = await Jewelry.find();
