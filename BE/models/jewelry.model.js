@@ -69,7 +69,16 @@ const jewelrySchema = new mongoose.Schema({
   auctionDetails: auctionDetailsSchema,
   status: {
     type: String,
-    enum: ["Pending", "Valuated", "Approved", "Rejected", "Auctioned", "Sold"],
+    enum: [
+      "Pending",
+      "Preliminary Valuation Requested",
+      "Jewelry Arrival Confirmed",
+      "Final Valuation",
+      "Approved",
+      "Rejected",
+      "Auctioned",
+      "Sold",
+    ],
     required: true,
   },
   image: {

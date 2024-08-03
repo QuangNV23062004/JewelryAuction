@@ -1,10 +1,9 @@
 // Login.js
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Button, Col, Row, Container, Form } from "react-bootstrap";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../UserContext";
 
 const FullContainer = styled.div`
   margin: 50px 0px;
@@ -67,7 +66,6 @@ export default function Login() {
   const [loginInput, setLoginInput] = useState("");
   const [password, setPassword] = useState("");
   const nav = useNavigate();
-  const { setUser, setMenu } = useContext(UserContext);
 
   const handleLogin = async () => {
     const isEmail = loginInput.includes("@");
@@ -81,14 +79,11 @@ export default function Login() {
         payload
       );
       setMessage(response.data.message);
-      if (response.data.user.role === 1) {
+
+      if (response.data.user.role === 2) {
         sessionStorage.setItem("user", JSON.stringify(response.data.user));
-        setUser(response.data.user);
-        nav("/");
-        setMenu("Home");
-      } else {
-        setMessage("You can't login here");
-      }
+        nav("/staff");
+      } else setMessage("You can't login here");
     } catch (error) {
       if (error.response && error.response.data) {
         setMessage(error.response.data.message);
