@@ -74,6 +74,7 @@ const jewelrySchema = new mongoose.Schema({
       "Preliminary Valuation Requested",
       "Jewelry Arrival Confirmed",
       "Final Valuation",
+      "Final Valuation Confirmed",
       "Approved",
       "Rejected",
       "Auctioned",
@@ -110,6 +111,10 @@ const jewelrySchema = new mongoose.Schema({
     required: false,
   },
   statusUpdateDate: {
+    type: Date,
+    default: Date.now,
+  },
+  createAt: {
     type: Date,
     default: Date.now,
   },

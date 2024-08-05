@@ -111,6 +111,7 @@ export default function Register() {
     category: "",
     feedback: [],
     statusUpdateDate: new Date(),
+    createAt: new Date(),
   });
 
   useEffect(() => {
