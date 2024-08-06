@@ -6,7 +6,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const FullContainer = styled.div`
-  margin: 50px 0px;
   display: flex;
   justify-content: center;
   align-items: center;

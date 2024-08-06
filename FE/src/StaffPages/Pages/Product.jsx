@@ -18,6 +18,15 @@ export default function Product() {
   const handleShow1 = () => setShow1(true);
 
   const [selected, setSelected] = useState(null);
+  const [hovered, setHovered] = useState(null);
+
+  const handleHover = (id) => {
+    setHovered(id);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(null);
+  };
 
   const SetIdAndOpenModal = (jew) => {
     setId(jew._id);
@@ -29,6 +38,7 @@ export default function Product() {
     const NewUpdatedJewelry = {
       ...jew,
       status: "Jewelry Arrival Confirmed",
+      statusUpdateDate: new Date(),
     };
     try {
       await axios.put(
@@ -56,6 +66,7 @@ export default function Product() {
         },
       },
       status: "Preliminary Valuation Requested",
+      statusUpdateDate: new Date(),
     };
 
     try {
@@ -104,7 +115,10 @@ export default function Product() {
 
     return words.slice(0, 10).join(" ") + (words.length > 10 ? "..." : "");
   };
-
+  const nav = useNavigate();
+  const handleViewDetail = (id) => {
+    nav(`/staff/detail/${id}`);
+  };
   return (
     <>
       <Modal show={show1} onHide={handleClose1}>
@@ -154,11 +168,48 @@ export default function Product() {
         >
           <Row>
             <Col md={2}>
-              <Card.Img
-                variant="top"
-                src={jew.image}
-                style={{ height: 147, width: 200 }}
-              />
+              <div
+                onMouseEnter={() => handleHover(jew._id)}
+                onMouseLeave={handleMouseLeave}
+                style={{ opacity: 1 }}
+              >
+                <Card.Img
+                  variant="top"
+                  src={jew.image}
+                  style={{
+                    height: 148,
+                    width: 200,
+                    borderRadius: 5,
+                    position: "relative",
+                  }}
+                />
+                {hovered === jew._id && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: 200,
+                      height: 148,
+                      borderRadius: 5,
+                      backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      opacity: 1,
+                      transition: "opacity 0.3s ease-in-out",
+                    }}
+                  >
+                    {" "}
+                    <Button
+                      variant="outline-info"
+                      onClick={() => handleViewDetail(jew._id)}
+                    >
+                      View Detail
+                    </Button>
+                  </div>
+                )}
+              </div>
             </Col>
             <Col
               md={10}
