@@ -13,5 +13,6 @@ router.get("/:id", getJewelry);
 router.post("/", createJewelry);
 router.put("/:id", updateJewelry);
 router.delete("/:id", deleteJewelry);
-
+// router.get("/owner/:id",getJewelryByOwner);
+// router.get("/staff/:id",getJewelryByStaff);
 module.exports = router;

@@ -7,7 +7,6 @@ export default function StaffPage() {
   return (
     <Routes>
       <Route path="/" element={<Product />}></Route>
-      <Route path="/login" element={<Login />}></Route>
       <Route path="/detail/:id" element={<Detail />}></Route>
     </Routes>
   );

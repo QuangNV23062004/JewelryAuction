@@ -104,7 +104,7 @@ export default function Detail() {
         </Col>
       </Row>
       <Row className="mt-4">
-        <Col md={8}>
+        <Col md={4}>
           <Card style={{ height: "100%" }}>
             <Card.Header>Image</Card.Header>
             <Card.Body className="text-center">
@@ -116,11 +116,11 @@ export default function Detail() {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={4}>
+        <Col md={8}>
           <Card style={{ height: "100%" }}>
             <Card.Header>Status</Card.Header>
             <Card.Body className="text-center">
-              <h5 style={{ marginTop: 70 }}>{jew.status}</h5>
+              <h5 style={{ marginTop: 75 }}>{jew.status}</h5>
             </Card.Body>
           </Card>
         </Col>

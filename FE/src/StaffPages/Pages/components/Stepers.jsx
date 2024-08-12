@@ -8,7 +8,7 @@ import auction from "../../../../icon/auction.png";
 import confirmed from "../../../../icon/confirmed.png";
 import reject from "../../../../icon/reject.png";
 import sold from "../../../../icon/sold.png";
-
+import sent from "../../../../icon/sent.png";
 export default function Stepers({ step }) {
   const steps = [
     { status: "Pending", image: pending, display: "Pending" },
@@ -17,6 +17,7 @@ export default function Stepers({ step }) {
       image: preliminary,
       display: "Preliminary",
     },
+    { status: "Jewelry Sent", image: sent, display: "Sent" },
     { status: "Jewelry Arrival Confirmed", image: arrived, display: "Arrived" },
     { status: "Final Valuation", image: final, display: "Final" },
     {

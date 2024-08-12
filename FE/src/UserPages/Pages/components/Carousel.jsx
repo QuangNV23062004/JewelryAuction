@@ -35,7 +35,7 @@ function Carouseler() {
                 width: "100vh",
                 height: "90vh",
                 padding: "0px 0px",
-                margin: "50px 0px",
+                margin: "20px 0px 50px 0px",
               }}
             />
           </Carousel.Item>

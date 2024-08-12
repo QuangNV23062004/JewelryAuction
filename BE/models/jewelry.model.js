@@ -70,15 +70,17 @@ const jewelrySchema = new mongoose.Schema({
   status: {
     type: String,
     enum: [
-      "Pending",
-      "Preliminary Valuation Requested",
-      "Jewelry Arrival Confirmed",
-      "Final Valuation",
-      "Final Valuation Confirmed",
-      "Approved",
-      "Rejected",
-      "Auctioned",
-      "Sold",
+      "Pending", //User registers the jewelry
+      "Preliminary Valuation Requested", //Preliminary valuation and jewelry requested
+      "Jewelry Sent", //user confirm they've seen the notification and the jewelry has been sent
+      "Jewelry Arrival Confirmed", //staff confirm the jewelry's arrival
+      "Final Valuation", //staff set final valuation
+      "Final Valuation Confirmed", //manager confirm the jewelry's arrival
+      "Approved", //user approve the auction of that jewelry after final valuation
+      "Rejected", //user reject the auction
+      "Scheduled", //put on schedule
+      "Auctioned", //jewelry is set to auction
+      "Sold", //after auction
     ],
     required: true,
   },
@@ -117,6 +119,17 @@ const jewelrySchema = new mongoose.Schema({
   createAt: {
     type: Date,
     default: Date.now,
+  },
+  assignedTo: {
+    ValuationStaff: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    AuctionStaff: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    DeliveryStaff: String,
   },
 });
 

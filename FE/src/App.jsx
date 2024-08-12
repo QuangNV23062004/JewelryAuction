@@ -6,7 +6,8 @@ import { UserProvider } from "./UserPages/UserContext";
 import StaffPage from "./StaffPages/StaffPage";
 import Login from "./StaffPages/Pages/Login";
 import { useState, useEffect } from "react";
-
+import ManagerPage from "./ManagerPages/ManagerPage";
+import Login2 from "./ManagerPages/Pages/Login";
 function App() {
   const [role, setRole] = useState(0);
 
@@ -29,6 +30,13 @@ function App() {
             }
           />
           <Route path="/staff/login" element={<Login />} />
+          <Route
+            path="/manager/*"
+            element={
+              role === 3 ? <ManagerPage /> : <Navigate to="/manager/login" />
+            }
+          ></Route>
+          <Route path="/manager/login" element={<Login2 />}></Route>
         </Routes>
       </BrowserRouter>
     </UserProvider>

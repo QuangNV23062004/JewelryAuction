@@ -18,7 +18,7 @@ export default function Footer() {
   const { user, setUser, menu, setMenu } = useContext(UserContext);
   return (
     <footer
-      style={{ backgroundColor: "#343a40", color: "white", padding: "40px 0" }}
+      style={{ backgroundColor: "#00308F", color: "white", padding: "40px 0" }}
     >
       <Container>
         <Row>
