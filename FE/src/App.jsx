@@ -8,6 +8,7 @@ import Login from "./StaffPages/Pages/Login";
 import { useState, useEffect } from "react";
 import ManagerPage from "./ManagerPages/ManagerPage";
 import Login2 from "./ManagerPages/Pages/Login";
+import { JewelryProvider } from "./ManagerPages/Pages/components/JewelryProvider";
 function App() {
   const [role, setRole] = useState(0);
 
@@ -20,25 +21,27 @@ function App() {
 
   return (
     <UserProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/*" element={<UserPage />} />
-          <Route
-            path="/staff/*"
-            element={
-              role === 2 ? <StaffPage /> : <Navigate to="/staff/login" />
-            }
-          />
-          <Route path="/staff/login" element={<Login />} />
-          <Route
-            path="/manager/*"
-            element={
-              role === 3 ? <ManagerPage /> : <Navigate to="/manager/login" />
-            }
-          ></Route>
-          <Route path="/manager/login" element={<Login2 />}></Route>
-        </Routes>
-      </BrowserRouter>
+      <JewelryProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/*" element={<UserPage />} />
+            <Route
+              path="/staff/*"
+              element={
+                role === 2 ? <StaffPage /> : <Navigate to="/staff/login" />
+              }
+            />
+            <Route path="/staff/login" element={<Login />} />
+            <Route
+              path="/manager/*"
+              element={
+                role === 3 ? <ManagerPage /> : <Navigate to="/manager/login" />
+              }
+            ></Route>
+            <Route path="/manager/login" element={<Login2 />}></Route>
+          </Routes>
+        </BrowserRouter>
+      </JewelryProvider>
     </UserProvider>
   );
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -7,9 +7,11 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Buttons from "./Buttons";
 import { useLocation } from "react-router-dom";
+import { useJewelry } from "./JewelryProvider";
 
 export default function Product() {
-  const [jewelry, setJewelry] = useState([]);
+  const { jewelry, setJewelry, setOriginal, original, selected, setSelected } =
+    useJewelry();
   const [staffs, setStaffs] = useState([]);
   const [staffID, setStaffID] = useState("");
   const [selectedJewelry, setSelectedJewelry] = useState(null);
@@ -31,13 +33,13 @@ export default function Product() {
         ...selectedJewelry,
         assignedTo: {
           ...selectedJewelry.assignedTo,
-          ValuationStaff: staffID, // Update only the ValuationStaff
+          ValuationStaff: staffID,
         },
       });
       handleClose();
       fetchData(); // Refresh the list after updating
     } catch (error) {
-      console.log("Error assigning staff: " + error);
+      console.error("Error assigning staff: " + error);
     }
   };
 
@@ -68,12 +70,21 @@ export default function Product() {
       const filteredJewelry = response.data
         .filter((j) => statuses.includes(j.status))
         .sort((a, b) => new Date(b.createAt) - new Date(a.createAt));
-      setJewelry(filteredJewelry);
 
-      const response2 = await axios.get("http://localhost:5000/user");
-      setStaffs(response2.data.filter((a) => a.role === 2));
+      setOriginal(filteredJewelry);
+      applyFilter(selected, filteredJewelry); // Apply the current selected filter
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching data: " + error);
+    }
+  };
+
+  const applyFilter = (selectedFilter, data = original) => {
+    if (selectedFilter === "Assigned") {
+      setJewelry(data.filter((j) => j.assignedTo?.ValuationStaff));
+    } else if (selectedFilter === "Unassigned") {
+      setJewelry(data.filter((j) => !j.assignedTo?.ValuationStaff));
+    } else {
+      setJewelry(data); // Reset to original jewelry when "All" is selected
     }
   };
 
@@ -110,26 +121,34 @@ export default function Product() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Buttons jewelry={jewelry} setJewelry={setJewelry}></Buttons>
+      <Buttons />
       <h1 style={{ margin: "40px 0px" }}>Product List</h1>
       <ul>
         {jewelry &&
           jewelry.map((item) => (
-            <Card style={{ width: "95%", margin: "20px 0px" }} key={item._id}>
+            <Card
+              style={{
+                width: "95%",
+                margin: "20px 0px",
+                border: "1px solid black",
+              }}
+              key={item._id}
+            >
               <Row>
                 <Col md={2} sm={2} xs={2}>
                   <Card.Img
                     variant="top"
                     src={item.image}
                     style={{
-                      width: 185,
+                      width: 200,
                       borderRadius: 5,
                       border: "1px solid black",
+                      height: "100%",
                     }}
                   />
                 </Col>
                 <Col md={10} sm={10} xs={10}>
-                  <Card.Body>
+                  <Card.Body style={{ paddingLeft: 50 }}>
                     <Card.Title style={{ padding: "20px " }}>
                       <h3>{item.name}</h3>
                       <span>

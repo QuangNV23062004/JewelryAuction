@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Row } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
+import { useJewelry } from "./JewelryProvider";
 
-export default function Buttons({ jewelry, setJewelry }) {
-  const [selected, setSelected] = useState("All");
+export default function Buttons() {
+  const { setJewelry, original, selected, setSelected } = useJewelry();
   const [buttons, setButtons] = useState([]);
   const loc = useLocation();
   const path = loc.pathname;
 
+  // Update buttons based on the current path
   useEffect(() => {
     let newButtons = [];
     switch (path) {
@@ -27,21 +29,23 @@ export default function Buttons({ jewelry, setJewelry }) {
         newButtons = [];
         break;
     }
-    setButtons((prevButtons) => {
-      if (JSON.stringify(prevButtons) !== JSON.stringify(newButtons)) {
-        return newButtons;
-      }
-      return prevButtons;
-    });
+    setButtons(newButtons);
   }, [path]);
 
-  useEffect(() => {
-    if (selected == "Assigned") {
-      setJewelry(jewelry.filter((j) => j.assignedTo?.ValuationStaff));
-    } else if (selected === "Unassigned") {
-      setJewelry(jewelry.filter((j) => !j.assignedTo?.ValuationStaff));
-    }
-  }, [selected]);
+  // Handle button selection and filter jewelry
+  const handleSelection = useCallback(
+    (button) => {
+      setSelected(button);
+      if (button === "Assigned") {
+        setJewelry(original.filter((j) => j.assignedTo?.ValuationStaff));
+      } else if (button === "Unassigned") {
+        setJewelry(original.filter((j) => !j.assignedTo?.ValuationStaff));
+      } else {
+        setJewelry(original); // Reset to original jewelry when "All" is selected
+      }
+    },
+    [original, setJewelry, setSelected]
+  );
 
   return (
     <Row>
@@ -57,7 +61,7 @@ export default function Buttons({ jewelry, setJewelry }) {
             width: `${100 / buttons.length}%`,
             padding: "20px 0px",
           }}
-          onClick={() => setSelected(button)}
+          onClick={() => handleSelection(button)}
         >
           <h6>{button}</h6>
         </button>

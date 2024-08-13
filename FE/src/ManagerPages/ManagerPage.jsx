@@ -4,6 +4,7 @@ import { Col, Row } from "react-bootstrap";
 import Header from "./Pages/components/Header";
 import SideBar from "./Pages/components/SideBar";
 import Buttons from "./Pages/components/Buttons";
+import { JewelryProvider } from "./Pages/components/JewelryProvider";
 
 export default function ManagerPage() {
   const [name, setName] = useState("");
@@ -17,14 +18,28 @@ export default function ManagerPage() {
   return (
     <>
       <Row>
-        <Header name={name}></Header>
+        <div style={{ position: "fixed", top: 0, left: 0, zIndex: 1000 }}>
+          <Header name={name}></Header>
+        </div>
       </Row>
       <Row>
-        <Col md={3}>
-          <SideBar></SideBar>
+        <Col md={4}>
+          <div
+            style={{
+              position: "fixed",
+              width: "30%",
+              top: 90,
+              left: 0,
+              zIndex: 1000,
+            }}
+          >
+            <SideBar></SideBar>
+          </div>
         </Col>
-        <Col md={9}>
-          <Product></Product>
+        <Col md={8}>
+          <div style={{ marginTop: 100 }}>
+            <Product></Product>
+          </div>
         </Col>
       </Row>
     </>
