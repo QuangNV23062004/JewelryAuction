@@ -1,23 +1,23 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Button, Col, Row } from "react-bootstrap";
-import Table from "react-bootstrap/Table";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Card from "react-bootstrap/Card";
-import ListGroup from "react-bootstrap/ListGroup";
+import { useJewelry } from "../../ManagerPages/Pages/components/JewelryProvider";
 
 export default function Product() {
-  const [jewelry, setJewelry] = useState([]);
+  const { jewelry, setJewelry, setOriginal, original, selected, setSelected } =
+    useJewelry();
   const [expandedRows, setExpandedRows] = useState([]);
   const [show1, setShow1] = useState(false);
   const [id, setId] = useState("");
   const user = JSON.parse(sessionStorage.getItem("user"));
   const handleClose1 = () => setShow1(false);
   const handleShow1 = () => setShow1(true);
-
-  const [selected, setSelected] = useState(null);
+  const location = useLocation();
+  const [SelectedJew, setSelectedJew] = useState(null);
   const [hovered, setHovered] = useState(null);
 
   const handleHover = (id) => {
@@ -30,7 +30,7 @@ export default function Product() {
 
   const SetIdAndOpenModal = (jew) => {
     setId(jew._id);
-    setSelected(jew);
+    setSelectedJew(jew);
     handleShow1();
   };
 
@@ -57,11 +57,11 @@ export default function Product() {
 
   const setValueUpdateAndClose = async (id) => {
     const updatedJewelry = {
-      ...selected,
+      ...SelectedJew,
       auctionDetails: {
-        ...selected.auctionDetails,
+        ...SelectedJew.auctionDetails,
         initialValuation: {
-          value: selected.initialValuation.value,
+          value: SelectedJew.initialValuation.value,
           staffID: user._id,
         },
       },
@@ -81,14 +81,52 @@ export default function Product() {
       console.error("Error send initial valuation: " + error);
     }
   };
-
+  const currentURL = location.pathname;
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:5000/jewelry");
       const jew = response.data.sort(
         (a, b) => new Date(b.createAt) - new Date(a.createAt)
       );
-      setJewelry(response.data);
+
+      let filteredJewelry = jew;
+
+      switch (currentURL) {
+        case "/staff/Valuation":
+          filteredJewelry = jew.filter(
+            (j) =>
+              [
+                "Pending",
+                "Preliminary Valuation Requested",
+                "Jewelry Sent",
+                "Jewelry Arrival Confirmed",
+              ].includes(j.status) && j.assignedTo?.ValuationStaff === user._id
+          );
+          break;
+        case "/staff/Auction":
+          filteredJewelry = jew.filter(
+            (j) =>
+              ["Scheduled", "Auctioned"].includes(j.status) &&
+              j.assignedTo?.AuctionStaff === user._id
+          );
+          break;
+        case "/staff/Delivery":
+          filteredJewelry = jew.filter(
+            (j) =>
+              j.status === "Sold" && j.assignedTo?.DeliveryStaff === user._id
+          );
+          break;
+        default:
+          filteredJewelry = jew.filter(
+            (j) =>
+              j.assignedTo?.ValuationStaff === user._id ||
+              j.assignedTo?.AuctionStaff === user._id ||
+              j.assignedTo?.DeliveryStaff === user._id
+          );
+          break;
+      }
+
+      setJewelry(filteredJewelry);
     } catch (error) {
       console.log(error);
     }
@@ -131,9 +169,9 @@ export default function Product() {
               <Form.Control
                 type="number"
                 placeholder="1000"
-                value={selected?.initialValuation?.value || 0}
+                value={SelectedJew?.initialValuation?.value || 0}
                 onChange={(e) =>
-                  setSelected((prev) => ({
+                  setSelectedJew((prev) => ({
                     ...prev,
                     initialValuation: {
                       ...prev.initialValuation,

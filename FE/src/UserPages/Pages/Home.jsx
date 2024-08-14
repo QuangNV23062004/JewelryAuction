@@ -6,6 +6,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+
 const responsive = {
   superLargeDesktop: {
     breakpoint: { max: 4000, min: 1024 },
@@ -30,7 +31,6 @@ const responsive = {
 };
 
 export default function Home() {
-  //axios get from this api: http://localhost:5000/jewelry
   const [jewelry, setJewelry] = useState([]);
   const [newjew, setNewJew] = useState([]);
   const [expensive, setExpensive] = useState([]);
@@ -52,27 +52,28 @@ export default function Home() {
       "https://i.etsystatic.com/6382786/r/il/366e41/2174784857/il_fullxfull.2174784857_dx2y.jpg",
     Necklace: "http://imgs.inkfrog.com/pix/yzl/W005N1655.jpg",
   };
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/jewelry`);
       const fetchedJewelry = response.data;
 
-      // Update state with fetched data
       setJewelry(fetchedJewelry);
 
-      // Sort by statusUpdateDate and get the latest 4 items
       const sortedByDate = [...fetchedJewelry].sort(
         (a, b) => new Date(b.statusUpdateDate) - new Date(a.statusUpdateDate)
       );
       setNewJew(sortedByDate.slice(0, 4));
 
-      // Sort by finalizedPrice and get the top 3 expensive items
       const sortedByPrice = [...fetchedJewelry].sort(
         (a, b) => b.finalizedPrice?.value - a.finalizedPrice?.value
       );
+      [sortedByPrice[0], sortedByPrice[1]] = [
+        sortedByPrice[1],
+        sortedByPrice[0],
+      ];
       setExpensive(sortedByPrice.slice(0, 3));
 
-      // Extract unique categories
       const uniqueCategories = [
         ...new Set(fetchedJewelry.map((item) => item.category)),
       ];
@@ -81,10 +82,11 @@ export default function Home() {
       console.error("Error fetching data:", error);
     }
   };
+
   useEffect(() => {
     fetchData();
-    console.log(categories);
   }, []);
+
   return (
     <>
       <Carouseler></Carouseler>
@@ -161,6 +163,7 @@ export default function Home() {
           </Row>
         </Col>
       </Row>
+
       <Row style={{ margin: "40px 0px" }}>
         <Col md={12}>
           <div style={{ marginBottom: 40 }}>
@@ -231,12 +234,7 @@ export default function Home() {
       <Row style={{ margin: "40px 0px" }}>
         <Col md={12}>
           <div style={{ marginBottom: 40 }}>
-            <h3
-              style={{
-                textAlign: "center",
-                color: "#e6c900",
-              }}
-            >
+            <h3 style={{ textAlign: "center", color: "#e6c900" }}>
               <span style={{ borderBottom: "5px solid #e6c900" }}>
                 <b>PAST PREMIUM AUCTION JEWELRY</b>
               </span>
@@ -248,36 +246,106 @@ export default function Home() {
                 <Col
                   md={4}
                   style={{ display: "flex", justifyContent: "center" }}
+                  key={index}
                 >
-                  <Card style={{ width: "22 rem" }}>
-                    <Card.Img variant="top" src={ex.image} />
+                  <Card
+                    style={{
+                      width: "24rem",
+                      height: "30rem",
+                      marginTop: index === 1 ? 0 : index === 0 ? 20 : 40, // Adjust the margin
+                      border: "1px solid rgba(0, 0, 0, 0.5)",
+                      boxShadow: `0 4px 8px 0 ${
+                        index === 1
+                          ? "rgba(255, 215, 0, 0.6)" // Gold
+                          : index === 0
+                          ? "rgba(192, 192, 192, 0.6)" // Silver
+                          : "rgba(205, 127, 50, 0.6)" // Bronze
+                      }, 0 6px 20px 0 ${
+                        index === 1
+                          ? "rgba(255, 215, 0, 0.6)" // Gold
+                          : index === 0
+                          ? "rgba(192, 192, 192, 0.6)" // Silver
+                          : "rgba(205, 127, 50, 0.6)" // Bronze
+                      }`,
+                      background: `linear-gradient(to bottom, ${
+                        index === 1
+                          ? "gold"
+                          : index === 0
+                          ? "silver"
+                          : "rgba(232, 198, 77, 0.5)"
+                      }, white)`,
+                      color: "white",
+                    }}
+                  >
+                    <Card.Img
+                      variant="top"
+                      src={ex.image}
+                      style={{ height: "50%", objectFit: "cover" }}
+                    />
                     <Card.Body>
-                      <Card.Title>
-                        {" "}
+                      <Card.Title
+                        style={{
+                          height: 80,
+                          background: "rgba(0, 0, 0, 0.7)",
+                          padding: "10px",
+                          borderRadius: "5px",
+                          textAlign: "center",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
                         <b>{ex.name}</b>
                       </Card.Title>
+                      <ListGroup className="list-group-flush">
+                        <ListGroup.Item
+                          style={{ backgroundColor: "transparent" }}
+                        >
+                          <b>Category:</b> {ex.category}
+                        </ListGroup.Item>
+                        <ListGroup.Item
+                          style={{ backgroundColor: "transparent" }}
+                        >
+                          <b>Auctioned price: </b>
+                          {ex.finalizedPrice}
+                        </ListGroup.Item>
+                        <ListGroup.Item
+                          style={{ backgroundColor: "transparent" }}
+                        >
+                          <b>Auctioned time: </b>
+                        </ListGroup.Item>
+                      </ListGroup>
                     </Card.Body>
-                    <ListGroup className="list-group-flush">
-                      <ListGroup.Item>
-                        {" "}
-                        <b>Category:</b> {ex.category}
-                      </ListGroup.Item>
-                      <ListGroup.Item>
-                        {" "}
-                        <b>Auctioned price: </b>
-                        {ex.finalizedPrice}
-                      </ListGroup.Item>
-                      <ListGroup.Item>
-                        {" "}
-                        <b>Auctioned time: </b>
-                      </ListGroup.Item>
-                    </ListGroup>
                   </Card>
                 </Col>
               ))}
           </Row>
+          <Row style={{ margin: "10px 0px" }}>
+            <Col md={4} style={{ textAlign: "center" }}>
+              <span style={{ color: "silver", fontSize: 20, fontWeight: 600 }}>
+                2nd place
+              </span>
+            </Col>
+            <Col md={4} style={{ textAlign: "center" }}>
+              <span style={{ color: "gold", fontSize: 20, fontWeight: 600 }}>
+                1st place
+              </span>
+            </Col>
+            <Col md={4} style={{ textAlign: "center" }}>
+              <span
+                style={{
+                  color: "rgba(232, 198, 77, 1)",
+                  fontSize: 20,
+                  fontWeight: 600,
+                }}
+              >
+                3rd place
+              </span>
+            </Col>
+          </Row>{" "}
         </Col>
       </Row>
+
       <Row style={{ margin: "40px 0px" }}>
         <Col md={12}>
           <div style={{ marginBottom: 40 }}>

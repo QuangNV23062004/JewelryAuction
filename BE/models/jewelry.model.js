@@ -129,7 +129,14 @@ const jewelrySchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    DeliveryStaff: String,
+    DeliveryStaff: {
+      type: String,
+      enum: [
+        "N/A", // Allow for cases where there's no specific staff assigned
+        mongoose.Schema.Types.ObjectId,
+      ],
+      ref: "User",
+    },
   },
 });
 

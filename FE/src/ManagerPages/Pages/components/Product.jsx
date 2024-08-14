@@ -73,6 +73,8 @@ export default function Product() {
 
       setOriginal(filteredJewelry);
       applyFilter(selected, filteredJewelry); // Apply the current selected filter
+      const response2 = await axios.get("http://localhost:5000/user");
+      setStaffs(response2.data.filter((st) => st.role === 2));
     } catch (error) {
       console.error("Error fetching data: " + error);
     }

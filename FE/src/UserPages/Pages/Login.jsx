@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 
 const FullContainer = styled.div`
-  margin: 50px 0px;
+  margin-bottom: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -104,7 +104,7 @@ export default function Login() {
         <FormRow>
           <Col md={12}>
             <FormWrapper>
-              <FormHeading>LOGIN</FormHeading>
+              <FormHeading style={{ fontWeight: 600 }}>USER LOGIN</FormHeading>
               <br />
               <Form>
                 <Form.Group className="mb-3">

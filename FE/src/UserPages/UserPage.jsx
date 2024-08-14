@@ -12,16 +12,20 @@ import Contact from "./Pages/Contact";
 export default function UserPage() {
   return (
     <>
-      <Header></Header>
-      <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/register" element={<Register />}></Route>
-        <Route path="/auction" element={<Auction />}></Route>
-        <Route path="/contact" element={<Contact />}></Route>
-        <Route path="/process" element={<Process />}></Route>
-        <Route path="/about" element={<About />}></Route>
-      </Routes>
+      <div style={{ position: "fixed", zIndex: 1000, width: "100%" }}>
+        <Header></Header>
+      </div>
+      <div style={{ paddingTop: 130 }}>
+        <Routes>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/register" element={<Register />}></Route>
+          <Route path="/auction" element={<Auction />}></Route>
+          <Route path="/contact" element={<Contact />}></Route>
+          <Route path="/process" element={<Process />}></Route>
+          <Route path="/about" element={<About />}></Route>
+        </Routes>
+      </div>
       <Footer></Footer>
     </>
   );

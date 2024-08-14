@@ -3,6 +3,9 @@ import { Button, Col, Row, Container, Form } from "react-bootstrap";
 import styled from "styled-components";
 import axios from "axios";
 import mongoose from "mongoose";
+import DistrictData from "../../Resources/District";
+import ProvinceData from "../../Resources/Province";
+import WardData from "../../Resources/Wards";
 
 const RegisterContainer = styled(Container)`
   background-color: #f8f9fa;
@@ -69,6 +72,10 @@ const StyledButton = styled(Button)`
 `;
 
 export default function Register() {
+  const [provinceId, setProvinceId] = useState("");
+  const [districtId, setDistrictId] = useState("");
+  const [wardId, setWardId] = useState("");
+
   const [user, setUser] = useState({
     _id: "",
     fullName: "",
@@ -113,6 +120,41 @@ export default function Register() {
     statusUpdateDate: new Date(),
     createAt: new Date(),
   });
+
+  const [provinceOptions, setProvinceOptions] = useState([]);
+  const [districtOptions, setDistrictOptions] = useState([]);
+  const [wardOptions, setWardOptions] = useState([]);
+
+  useEffect(() => {
+    setProvinceOptions(ProvinceData);
+  }, []);
+
+  useEffect(() => {
+    if (provinceId) {
+      const filteredDistricts = DistrictData.filter(
+        (d) => d.province_id === parseInt(provinceId)
+      );
+      setDistrictOptions(filteredDistricts);
+      setDistrictId("");
+      setWardId("");
+      setWardOptions([]);
+    } else {
+      setDistrictOptions([]);
+      setWardOptions([]);
+    }
+  }, [provinceId]);
+
+  useEffect(() => {
+    if (districtId) {
+      const filteredWards = WardData.filter(
+        (w) => w.district_id === parseInt(districtId)
+      );
+      setWardOptions(filteredWards);
+      setWardId("");
+    } else {
+      setWardOptions([]);
+    }
+  }, [districtId]);
 
   useEffect(() => {
     const storedUser = JSON.parse(sessionStorage.getItem("user"));
@@ -162,8 +204,26 @@ export default function Register() {
     const validateObjectId = (id) =>
       mongoose.Types.ObjectId.isValid(id) ? id : undefined;
 
+    // Get the names of the selected province, district, and ward
+    const provinceName =
+      ProvinceData.find((p) => p.province_id === parseInt(provinceId))?.name ||
+      "";
+    const districtName =
+      DistrictData.find((d) => d.district_id === parseInt(districtId))?.name ||
+      "";
+    const wardName =
+      WardData.find((w) => w.wards_id === parseInt(wardId))?.name || "";
+
+    // Concatenate the full address
+    const fullAddress =
+      `${provinceName}, ${districtName}, ${wardName}, ${user.address}`.trim();
+
     const updatedJewelry = {
       ...jewelry,
+      owner: {
+        ...jewelry.owner,
+        address: fullAddress, // Set the formatted address here
+      },
       auctionDetails: {
         ...jewelry.auctionDetails,
         initialValuation: {
@@ -238,11 +298,55 @@ export default function Register() {
                   onChange={handleUserChange}
                 />
               </Form.Group>
+              <Form.Group>
+                <FormLabel>Province</FormLabel>
+                <Form.Select
+                  value={provinceId}
+                  onChange={(e) => setProvinceId(e.target.value)}
+                >
+                  <option value="">Open this select menu</option>
+                  {provinceOptions.map((pro) => (
+                    <option key={pro.province_id} value={pro.province_id}>
+                      {pro.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+              <Form.Group>
+                <FormLabel>District</FormLabel>
+                <Form.Select
+                  value={districtId}
+                  onChange={(e) => setDistrictId(e.target.value)}
+                  disabled={!provinceId}
+                >
+                  <option value="">Open this select menu</option>
+                  {districtOptions.map((dis) => (
+                    <option key={dis.district_id} value={dis.district_id}>
+                      {dis.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+              <Form.Group>
+                <FormLabel>Ward</FormLabel>
+                <Form.Select
+                  value={wardId}
+                  onChange={(e) => setWardId(e.target.value)}
+                  disabled={!districtId}
+                >
+                  <option value="">Open this select menu</option>
+                  {wardOptions.map((w) => (
+                    <option key={w.wards_id} value={w.wards_id}>
+                      {w.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
               <Form.Group className="mb-3">
                 <FormLabel>Address</FormLabel>
                 <Form.Control
                   as="textarea"
-                  rows={3}
+                  rows={1}
                   name="address"
                   value={user.address}
                   onChange={handleUserChange}
@@ -297,7 +401,7 @@ export default function Register() {
                 <FormLabel>Jewelry Image URL</FormLabel>
                 <Form.Control
                   type="text"
-                  placeholder=""
+                  placeholder="You should upload the image to a cloud service and get the url"
                   value={image}
                   onChange={handleImageChange}
                 />
