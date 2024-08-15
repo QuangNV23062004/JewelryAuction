@@ -4,24 +4,26 @@ import { Link } from "react-router-dom";
 import ListGroup from "react-bootstrap/ListGroup";
 
 const sidebarStyles = {
-  backgroundColor: "#343a40", // Dark background for the sidebar
+  paddingTop: 10,
+  backgroundColor: "rgba(13, 110, 253, 0.8)", // Light background for the sidebar
   minHeight: "100vh", // Full height
-  color: "#ffffff", // White text
+  color: "#343a40", // Dark text
 };
 
 const listItemStyles = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  margin: "10px 0px",
+  margin: "10px 20px",
   padding: "20px 10px",
-  backgroundColor: "#495057", // Slightly lighter background for items
-  border: "1px solid #343a40", // Darker border
+  backgroundColor: "#e9ecef", // Slightly darker background for items
+  border: "1px solid #ced4da", // Lighter border
+  borderRadius: 5,
 };
 
 const linkStyles = {
   textDecoration: "none",
-  color: "#ffffff",
+  color: "rgba(13, 110, 253, 0.8)", // Dark text for links
   fontSize: "18px",
   flexGrow: 1,
 };
@@ -35,7 +37,7 @@ export default function SideBar() {
             New
           </Link>
           <Badge
-            bg="danger"
+            bg="secondary"
             style={{
               width: 35,
               height: 35,
@@ -52,7 +54,7 @@ export default function SideBar() {
             Valuating
           </Link>
           <Badge
-            bg="danger"
+            bg="secondary"
             style={{
               width: 35,
               height: 35,
@@ -69,7 +71,7 @@ export default function SideBar() {
             Confirm
           </Link>
           <Badge
-            bg="danger"
+            bg="secondary"
             style={{
               width: 35,
               height: 35,
@@ -86,7 +88,7 @@ export default function SideBar() {
             Auctioning
           </Link>
           <Badge
-            bg="danger"
+            bg="secondary"
             style={{
               width: 35,
               height: 35,
@@ -103,7 +105,7 @@ export default function SideBar() {
             Dashboard
           </Link>
           <Badge
-            bg="danger"
+            bg="secondary"
             style={{
               width: 35,
               height: 35,

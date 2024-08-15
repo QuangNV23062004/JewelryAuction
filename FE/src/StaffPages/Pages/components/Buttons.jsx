@@ -56,8 +56,9 @@ export default function Buttons() {
   return (
     <>
       <div style={{ backgroundColor: "whitesmoke" }}>
-        {buttons.map((button) => (
+        {buttons.map((button, index) => (
           <button
+            key={index}
             style={{
               backgroundColor: "white",
               border: "none",
@@ -85,8 +86,9 @@ export default function Buttons() {
           }}
         >
           {pills &&
-            pills.map((pill) => (
+            pills.map((pill, index) => (
               <button
+                key={index}
                 style={{
                   ...buttonStyle,
                   ...(isHovered === pill ? hoverStyle : {}),

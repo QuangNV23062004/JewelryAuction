@@ -113,13 +113,14 @@ export default function Home() {
                   style={{ display: "flex", justifyContent: "center" }}
                   key={jew._id}
                 >
-                  <Card style={{ width: "18rem" }}>
+                  <Card style={{ width: "18rem", height: 350 }}>
                     <Card.Img
                       variant="top"
                       src={jew.image}
                       style={{
                         position: "relative",
                         border: "1px solid black",
+                        height: "85%",
                       }}
                     />
 
@@ -154,9 +155,7 @@ export default function Home() {
                       </ListGroup.Item>
                     </ListGroup>
 
-                    <Card.Body>
-                      <Card.Link href="#">Card Link</Card.Link>
-                    </Card.Body>
+                    <Card.Body></Card.Body>
                   </Card>
                 </Col>
               ))}
@@ -379,9 +378,7 @@ export default function Home() {
                   <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
                   <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
                 </ListGroup>
-                <Card.Body>
-                  <Card.Link href="#">Card Link</Card.Link>
-                </Card.Body>
+                <Card.Body></Card.Body>
               </Card>
             </Col>
           </Row>

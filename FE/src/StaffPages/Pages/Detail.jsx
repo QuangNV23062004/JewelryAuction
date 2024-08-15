@@ -64,20 +64,7 @@ export default function Detail() {
       <h1 style={{ margin: "50px 20px", textAlign: "center" }}>Detail</h1>
       <Stepers step={jew.status} />
       <Row className="mt-4">
-        <Col md={6}>
-          <Card style={{ height: "100%" }}>
-            <Card.Header>Owner Details</Card.Header>
-            <Card.Body>
-              <Card.Text>
-                <b>Full Name:</b> {jew.owner.fullName} <br />
-                <b>Phone:</b> {jew.owner.phone} <br />
-                <b>Email:</b> {jew.owner.email} <br />
-                <b>Address:</b> {jew.owner.address}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={6}>
+        <Col md={8}>
           <Card style={{ height: "100%" }}>
             <Card.Header>Jewelry Details</Card.Header>
             <Card.Body>
@@ -102,25 +89,15 @@ export default function Detail() {
             </Card.Body>
           </Card>
         </Col>
-      </Row>
-      <Row className="mt-4">
         <Col md={4}>
-          <Card style={{ height: "100%" }}>
+          <Card style={{ height: "100%", width: "100%" }}>
             <Card.Header>Image</Card.Header>
             <Card.Body className="text-center">
               <img
                 src={jew.image}
                 alt="Jewelry"
-                style={{ maxWidth: "200px", maxHeight: "200px" }}
+                style={{ width: "350px", maxHeight: "200px" }}
               />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={8}>
-          <Card style={{ height: "100%" }}>
-            <Card.Header>Status</Card.Header>
-            <Card.Body className="text-center">
-              <h5 style={{ marginTop: 75 }}>{jew.status}</h5>
             </Card.Body>
           </Card>
         </Col>

@@ -94,6 +94,10 @@ export default function Product() {
     fetchData();
   }, [path]); // Re-fetch data whenever the path changes
 
+  const getStaffName = (id) => {
+    const staff = staffs.find((staff) => staff._id === id);
+    return staff ? staff.fullName : "No staff found";
+  };
   return (
     <div>
       <Modal show={show} onHide={handleClose}>
@@ -123,7 +127,9 @@ export default function Product() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Buttons />
+      <div style={{ position: "fixed", width: "100%", zIndex: 1000 }}>
+        <Buttons />
+      </div>
       <h1 style={{ margin: "40px 0px" }}>Product List</h1>
       <ul>
         {jewelry &&
@@ -153,10 +159,30 @@ export default function Product() {
                   <Card.Body style={{ paddingLeft: 50 }}>
                     <Card.Title style={{ padding: "20px " }}>
                       <h3>{item.name}</h3>
-                      <span>
-                        Current status:{" "}
-                        <b style={{ color: "red" }}>{item.status}</b>
-                      </span>
+                      <Row>
+                        <Col md={6}>
+                          <span>
+                            Current status:{" "}
+                            <b style={{ color: "red" }}>{item.status}</b>
+                          </span>
+                        </Col>
+                        {item.status === "Final Valuation" ? (
+                          <Col md={6}>
+                            <span>
+                              Value: ${item.auctionDetails.finalValuation.value}
+                            </span>{" "}
+                            <br />
+                            <span>
+                              By:{" "}
+                              {getStaffName(
+                                item.auctionDetails.finalValuation.staffID
+                              )}
+                            </span>
+                          </Col>
+                        ) : (
+                          <></>
+                        )}
+                      </Row>
                     </Card.Title>
                     <span style={{ padding: "20px " }}>
                       {item.status === "Pending" ? (
@@ -173,11 +199,21 @@ export default function Product() {
                       ) : null}
                       {item.status === "Final Valuation" ? (
                         <>
-                          <span>
-                            Final valuation: {item.finalValuation?.value}
-                          </span>
-                          <Button variant="primary">
-                            Confirm Final Valuation
+                          <br />
+                          <Button
+                            variant="outline-danger"
+                            style={{ width: 200 }}
+                            onClick={() => {
+                              console.log(item);
+                            }}
+                          >
+                            Reject
+                          </Button>
+                          <Button
+                            variant="outline-success"
+                            style={{ width: 200 }}
+                          >
+                            Approve
                           </Button>
                         </>
                       ) : null}
