@@ -75,6 +75,7 @@ const jewelrySchema = new mongoose.Schema({
       "Jewelry Sent", //user confirm they've seen the notification and the jewelry has been sent
       "Jewelry Arrival Confirmed", //staff confirm the jewelry's arrival
       "Final Valuation", //staff set final valuation
+      "Final Valuation Rejected", //manager reject the valuation
       "Final Valuation Confirmed", //manager confirm the jewelry's arrival
       "Approved", //user approve the auction of that jewelry after final valuation
       "Rejected", //user reject the auction

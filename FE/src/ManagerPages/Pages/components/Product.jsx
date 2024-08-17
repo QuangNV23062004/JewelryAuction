@@ -9,9 +9,17 @@ import Buttons from "./Buttons";
 import { useLocation } from "react-router-dom";
 import { useJewelry } from "./JewelryProvider";
 
-export default function Product() {
-  const { jewelry, setJewelry, setOriginal, original, selected, setSelected } =
-    useJewelry();
+export default function Product({ userID }) {
+  const {
+    jewelry,
+    setJewelry,
+    setOriginal,
+    original,
+    selected,
+    setSelected,
+    ManagerApprove,
+    ManagerReject,
+  } = useJewelry();
   const [staffs, setStaffs] = useState([]);
   const [staffID, setStaffID] = useState("");
   const [selectedJewelry, setSelectedJewelry] = useState(null);
@@ -53,6 +61,7 @@ export default function Product() {
           "Jewelry Sent",
           "Jewelry Arrival Confirmed",
           "Final Valuation",
+          "Final Valuation Rejected",
         ];
       case "/manager/Confirm":
         return ["Final Valuation Confirmed", "Approved", "Rejected"];
@@ -127,7 +136,7 @@ export default function Product() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div style={{ position: "fixed", width: "100%", zIndex: 1000 }}>
+      <div style={{ position: "fixed", width: "65%", zIndex: 1000 }}>
         <Buttons />
       </div>
       <h1 style={{ margin: "40px 0px" }}>Product List</h1>
@@ -204,7 +213,7 @@ export default function Product() {
                             variant="outline-danger"
                             style={{ width: 200 }}
                             onClick={() => {
-                              console.log(item);
+                              ManagerReject(item, userID);
                             }}
                           >
                             Reject
@@ -212,6 +221,7 @@ export default function Product() {
                           <Button
                             variant="outline-success"
                             style={{ width: 200 }}
+                            onClick={() => ManagerApprove(item, userID)}
                           >
                             Approve
                           </Button>

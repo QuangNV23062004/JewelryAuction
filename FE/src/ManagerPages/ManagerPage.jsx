@@ -8,11 +8,12 @@ import { JewelryProvider } from "./Pages/components/JewelryProvider";
 
 export default function ManagerPage() {
   const [name, setName] = useState("");
-
+  const [id, setId] = useState("");
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (user) {
       setName(user.fullName); // Simplified role setting
+      setId(user._id);
     }
   }, []);
   return (
@@ -38,7 +39,7 @@ export default function ManagerPage() {
         </Col>
         <Col md={8}>
           <div style={{ marginTop: 100 }}>
-            <Product></Product>
+            <Product userID={id}></Product>
           </div>
         </Col>
       </Row>

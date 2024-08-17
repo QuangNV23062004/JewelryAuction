@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,14 +34,17 @@ const menuStyles = {
   minWidth: "120px",
 };
 
-export default function Header({ name }) {
+export default function Header() {
   const nav = useNavigate();
-
+  const [name, setName] = useState("");
   const handleLogout = () => {
     sessionStorage.removeItem("user");
     nav("/manager/login");
   };
-
+  useEffect(() => {
+    const user = sessionStorage.getItem("user");
+    setName(user.fullName);
+  }, []);
   return (
     <Row style={headerStyles}>
       <Col md={4} style={{ display: "flex", alignItems: "center" }}>

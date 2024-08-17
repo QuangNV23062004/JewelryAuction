@@ -102,6 +102,99 @@ export const JewelryProvider = ({ children }) => {
       console.error("Error confirming arrival: " + error);
     }
   };
+  const UserApprove = async (jew) => {
+    const updatedJewelry = {
+      ...jew,
+      status: "Approved",
+      statusUpdateDate: new Date(),
+    };
+    try {
+      await axios.put(
+        `http://localhost:5000/jewelry/${jew._id}`,
+        updatedJewelry
+      );
+      setJewelry((prevJewelry) =>
+        prevJewelry.map((j) =>
+          j._id === jew._id ? { ...j, ...updatedJewelry } : j
+        )
+      );
+      setSelectedJewelry(null); // Clear selectedJewelry after confirmation
+    } catch (error) {
+      console.error("Error confirming arrival: " + error);
+    }
+  };
+  const UserReject = async (jew) => {
+    const updatedJewelry = {
+      ...jew,
+      status: "Rejected",
+      statusUpdateDate: new Date(),
+    };
+    try {
+      await axios.put(
+        `http://localhost:5000/jewelry/${jew._id}`,
+        updatedJewelry
+      );
+      setJewelry((prevJewelry) =>
+        prevJewelry.map((j) =>
+          j._id === jew._id ? { ...j, ...updatedJewelry } : j
+        )
+      );
+      setSelectedJewelry(null); // Clear selectedJewelry after confirmation
+    } catch (error) {
+      console.error("Error confirming arrival: " + error);
+    }
+  };
+  const ManagerApprove = async (jew, userID) => {
+    const updatedJewelry = {
+      ...jew,
+      finalValuation: {
+        ...jew.finalValuation,
+        managerID: userID,
+      },
+      status: "Final Valuation Confirmed",
+      statusUpdateDate: new Date(),
+    };
+    try {
+      await axios.put(
+        `http://localhost:5000/jewelry/${jew._id}`,
+        updatedJewelry
+      );
+      setJewelry((prevJewelry) =>
+        prevJewelry.map((j) =>
+          j._id === jew._id ? { ...j, ...updatedJewelry } : j
+        )
+      );
+      setSelectedJewelry(null); // Clear selectedJewelry after confirmation
+    } catch (error) {
+      console.error("Error confirming arrival: " + error);
+    }
+  };
+
+  const ManagerReject = async (jew, userID) => {
+    const updatedJewelry = {
+      ...jew,
+      finalValuation: {
+        ...jew.finalValuation,
+        managerID: userID,
+      },
+      status: "Final Valuation Rejected",
+      statusUpdateDate: new Date(),
+    };
+    try {
+      await axios.put(
+        `http://localhost:5000/jewelry/${jew._id}`,
+        updatedJewelry
+      );
+      setJewelry((prevJewelry) =>
+        prevJewelry.map((j) =>
+          j._id === jew._id ? { ...j, ...updatedJewelry } : j
+        )
+      );
+      setSelectedJewelry(null); // Clear selectedJewelry after confirmation
+    } catch (error) {
+      console.error("Error confirming arrival: " + error);
+    }
+  };
 
   const UnconfirmArrival = async (jew) => {
     const updatedJewelry = {
@@ -179,6 +272,10 @@ export const JewelryProvider = ({ children }) => {
         submitValuation2,
         confirmArrival,
         UnconfirmArrival,
+        ManagerApprove,
+        ManagerReject,
+        UserApprove,
+        UserReject,
       }}
     >
       {children}

@@ -131,6 +131,31 @@ export default function ProductList() {
                     Waiting for manager' confirmation
                   </Button>
                 )}
+                {jew.status === "Final Valuation Rejected" && (
+                  <div>
+                    <span>
+                      Last valuation:{" "}
+                      <b style={{ fontWeight: 700, color: "red" }}>
+                        ${jew.auctionDetails.finalValuation.value}
+                      </b>
+                      <br />
+                      Status:{" "}
+                      <b style={{ fontWeight: 700, color: "red" }}>
+                        {jew.status}
+                      </b>
+                    </span>
+
+                    <Button
+                      variant="outline-warning"
+                      style={{ width: 200 }}
+                      onClick={() => {
+                        openModal2(jew);
+                      }}
+                    >
+                      Revaluate
+                    </Button>
+                  </div>
+                )}
               </Card.Body>
             </Col>
           </Row>

@@ -40,6 +40,38 @@ export default function Buttons() {
         setJewelry(original.filter((j) => j.assignedTo?.ValuationStaff));
       } else if (button === "Unassigned") {
         setJewelry(original.filter((j) => !j.assignedTo?.ValuationStaff));
+      } else if (button === "Preliminary") {
+        setJewelry(
+          original.filter((j) => j.status === "Preliminary Valuation Requested")
+        );
+      } else if (button === "Arriving") {
+        setJewelry(original.filter((j) => j.status === "Jewelry Sent"));
+      } else if (button === "Arrived") {
+        setJewelry(
+          original.filter((j) => j.status === "Jewelry Arrival Confirmed")
+        );
+      } else if (button === "Final") {
+        setJewelry(
+          original.filter(
+            (j) =>
+              j.status === "Final Valuation" ||
+              j.status === "Final Valuation Rejected"
+          )
+        );
+      } else if (button === "Waiting") {
+        setJewelry(
+          original.filter((j) => j.status === "Final Valuation Confirmed")
+        );
+      } else if (button === "Approved") {
+        setJewelry(original.filter((j) => j.status === "Approved"));
+      } else if (button === "Rejected") {
+        setJewelry(original.filter((j) => j.status === "Rejected"));
+      } else if (button === "Scheduled") {
+        setJewelry(original.filter((j) => j.status === "Scheduled"));
+      } else if (button === "Ongoing") {
+        setJewelry(original.filter((j) => j.status === "Auctioned"));
+      } else if (button === "Auctioned") {
+        setJewelry(original.filter((j) => j.status === "Sold"));
       } else {
         setJewelry(original); // Reset to original jewelry when "All" is selected
       }
