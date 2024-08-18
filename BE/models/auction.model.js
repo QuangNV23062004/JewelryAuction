@@ -6,11 +6,6 @@ const auctionSchema = new mongoose.Schema({
     ref: "Jewelry",
     required: true,
   },
-  staffID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
   startTime: {
     type: Date, // Correct type for timestamp
     required: true,
@@ -27,6 +22,10 @@ const auctionSchema = new mongoose.Schema({
   winner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: false,
+  },
+  winnerBid: {
+    type: Number,
     required: false,
   },
 });

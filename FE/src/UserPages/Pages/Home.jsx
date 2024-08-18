@@ -6,6 +6,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import CountdownTimer from "./components/CountdownTimer";
 
 const responsive = {
   superLargeDesktop: {
@@ -36,6 +37,7 @@ export default function Home() {
   const [expensive, setExpensive] = useState([]);
   const [categories, setCategories] = useState([]);
   const [feedback, setFeedback] = useState([]);
+  const [auctions, setAuctions] = useState([]);
   const link = {
     Ring: "https://i5.walmartimages.com/asr/c7fab786-8103-4f9f-91b3-b9c37af9ae6f.bd6c1972b42a459b7794e8faf5236bf3.jpeg?odnWidth=1000&odnHeight=1000&odnBg=ffffff",
     Brooch:
@@ -55,16 +57,33 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/jewelry`);
-      const fetchedJewelry = response.data;
+      const jewelryResponse = await axios.get(`http://localhost:5000/jewelry`);
+      const auctionResponse = await axios.get("http://localhost:5000/auction");
+
+      const fetchedJewelry = jewelryResponse.data;
+      const fetchedAuctions = auctionResponse.data;
 
       setJewelry(fetchedJewelry);
+      setAuctions(fetchedAuctions);
 
       const sortedByDate = [...fetchedJewelry].sort(
         (a, b) => new Date(b.statusUpdateDate) - new Date(a.statusUpdateDate)
       );
-      setNewJew(sortedByDate.slice(0, 4));
 
+      // Combine jewelry data with corresponding auction data
+      const newJewWithAuctions = sortedByDate.slice(0, 4).map((jew) => {
+        const auction = fetchedAuctions.find(
+          (auc) => auc.jewelryID === jew._id
+        );
+        return {
+          ...jew,
+          startTime: auction ? auction.startTime : null,
+          endTime: auction ? auction.endTime : null,
+        };
+      });
+
+      setNewJew(newJewWithAuctions);
+      console.log(newjew);
       const sortedByPrice = [...fetchedJewelry].sort(
         (a, b) => b.finalizedPrice?.value - a.finalizedPrice?.value
       );
@@ -152,6 +171,9 @@ export default function Home() {
                       <ListGroup.Item>
                         {" "}
                         <b>Countdown:</b>{" "}
+                        <CountdownTimer
+                          targetDate={jew.startTime} // Pass the endTime from the auction
+                        />
                       </ListGroup.Item>
                     </ListGroup>
 

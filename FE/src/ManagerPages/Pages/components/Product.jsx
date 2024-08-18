@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 import Buttons from "./Buttons";
 import { useLocation } from "react-router-dom";
 import { useJewelry } from "./JewelryProvider";
+import AuctionModal from "./AuctionModal"; // Import the auction modal
 
 export default function Product({ userID }) {
   const {
@@ -16,21 +17,22 @@ export default function Product({ userID }) {
     setOriginal,
     original,
     selected,
-    setSelected,
     ManagerApprove,
     ManagerReject,
+    openModal3,
   } = useJewelry();
+
   const [staffs, setStaffs] = useState([]);
   const [staffID, setStaffID] = useState("");
   const [selectedJewelry, setSelectedJewelry] = useState(null);
-  const [show, setShow] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
   const loc = useLocation();
   const path = loc.pathname;
 
-  const handleClose = () => setShow(false);
-  const handleShow = (item) => {
+  const handleAssignModalClose = () => setShowAssignModal(false);
+  const handleAssignModalShow = (item) => {
     setSelectedJewelry(item);
-    setShow(true);
+    setShowAssignModal(true);
   };
 
   const handleSave = async () => {
@@ -44,7 +46,7 @@ export default function Product({ userID }) {
           ValuationStaff: staffID,
         },
       });
-      handleClose();
+      handleAssignModalClose();
       fetchData(); // Refresh the list after updating
     } catch (error) {
       console.error("Error assigning staff: " + error);
@@ -107,9 +109,78 @@ export default function Product({ userID }) {
     const staff = staffs.find((staff) => staff._id === id);
     return staff ? staff.fullName : "No staff found";
   };
+
+  const steps = [
+    { status: "Pending", color: "rgba(108, 117, 125, 1)", display: "Pending" },
+    {
+      status: "Preliminary Valuation Requested",
+      color: "rgba(0, 123, 255, 1)",
+      display: "Preliminary",
+    },
+    { status: "Jewelry Sent", color: "rgba(255, 193, 7, 1)", display: "Sent" },
+    {
+      status: "Jewelry Arrival Confirmed",
+      color: "rgba(40, 167, 69, 1)",
+      display: "Arrived",
+    },
+    {
+      status: "Final Valuation",
+      color: "rgba(255, 193, 7, 1)",
+      display: "Valuating",
+    },
+    {
+      status: "Final Valuation Rejected",
+      color: "rgba(255, 193, 7, 1)",
+      display: "Revaluate",
+    },
+    {
+      status: "Final Valuation Confirmed",
+      color: "rgba(40, 167, 69, 1)",
+      display: "Confirmed by manager",
+    },
+    {
+      status: "Approved",
+      color: "rgba(40, 167, 69, 1)",
+      display: "Approved by user",
+    },
+    {
+      status: "Rejected",
+      color: "rgba(220, 53, 69, 1)",
+      display: "Rejected by user",
+    },
+    {
+      status: "Scheduled",
+      color: "rgba(255, 193, 7, 1)",
+      display: "Scheduled",
+    },
+    {
+      status: "Auctioned",
+      color: "rgba(23, 162, 184, 1)",
+      display: "Auctioned",
+    },
+    { status: "Sold", color: "rgba(40, 167, 69, 1)", display: "Sold" },
+  ];
+
+  const DisplayStatus = (status) => {
+    const current = steps.find((st) => st.status === status);
+    return (
+      <span
+        style={{
+          backgroundColor: current.color,
+          borderRadius: 10,
+          color: "white",
+          padding: "5px 10px",
+        }}
+      >
+        {current.display}
+      </span>
+    );
+  };
+
   return (
     <div>
-      <Modal show={show} onHide={handleClose}>
+      {/* Assign Valuation Staff Modal */}
+      <Modal show={showAssignModal} onHide={handleAssignModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Assign Valuation Staff</Modal.Title>
         </Modal.Header>
@@ -128,7 +199,7 @@ export default function Product({ userID }) {
           </Form.Select>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleAssignModalClose}>
             Close
           </Button>
           <Button variant="primary" onClick={handleSave}>
@@ -136,6 +207,8 @@ export default function Product({ userID }) {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {selectedJewelry && <AuctionModal></AuctionModal>}
       <div style={{ position: "fixed", width: "65%", zIndex: 1000 }}>
         <Buttons />
       </div>
@@ -148,6 +221,7 @@ export default function Product({ userID }) {
                 width: "95%",
                 margin: "20px 0px",
                 border: "1px solid black",
+                height: 220,
               }}
               key={item._id}
             >
@@ -160,7 +234,7 @@ export default function Product({ userID }) {
                       width: 200,
                       borderRadius: 5,
                       border: "1px solid black",
-                      height: "100%",
+                      height: 220,
                     }}
                   />
                 </Col>
@@ -169,14 +243,13 @@ export default function Product({ userID }) {
                     <Card.Title style={{ padding: "20px " }}>
                       <h3>{item.name}</h3>
                       <Row>
-                        <Col md={6}>
+                        <Col md={12}>
                           <span>
-                            Current status:{" "}
-                            <b style={{ color: "red" }}>{item.status}</b>
+                            Current status: <b>{DisplayStatus(item.status)}</b>
                           </span>
                         </Col>
-                        {item.status === "Final Valuation" ? (
-                          <Col md={6}>
+                        {item.status === "Final Valuation" && (
+                          <Col md={12}>
                             <span>
                               Value: ${item.auctionDetails.finalValuation.value}
                             </span>{" "}
@@ -188,9 +261,20 @@ export default function Product({ userID }) {
                               )}
                             </span>
                           </Col>
-                        ) : (
-                          <></>
                         )}
+                        <Col md={12} style={{ padding: "20px 10px" }}>
+                          {item.status === "Approved" && (
+                            <Button
+                              variant="outline-success"
+                              onClick={() => {
+                                openModal3(item);
+                                console.log("open modal3");
+                              }}
+                            >
+                              Create auction
+                            </Button>
+                          )}
+                        </Col>
                       </Row>
                     </Card.Title>
                     <span style={{ padding: "20px " }}>
@@ -200,13 +284,13 @@ export default function Product({ userID }) {
                         ) : (
                           <Button
                             variant="primary"
-                            onClick={() => handleShow(item)}
+                            onClick={() => handleAssignModalShow(item)}
                           >
                             Assign Valuation Staff
                           </Button>
                         )
                       ) : null}
-                      {item.status === "Final Valuation" ? (
+                      {item.status === "Final Valuation" && (
                         <>
                           <br />
                           <Button
@@ -226,7 +310,7 @@ export default function Product({ userID }) {
                             Approve
                           </Button>
                         </>
-                      ) : null}
+                      )}
                     </span>
                   </Card.Body>
                 </Col>

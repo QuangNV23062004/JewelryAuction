@@ -14,6 +14,7 @@ export const JewelryProvider = ({ children }) => {
   const [showModal, setShowModal] = useState(false);
   const [valuation, setValuation] = useState(0);
   const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
   useEffect(() => {
     fetchData();
   }, []);
@@ -42,6 +43,10 @@ export const JewelryProvider = ({ children }) => {
     setValuation(jewelry?.finalValuation?.value || 0);
     setShowModal2(true);
   };
+  const openModal3 = (jewelry) => {
+    setSelectedJewelry(jewelry);
+    setShowModal3(true);
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -49,6 +54,9 @@ export const JewelryProvider = ({ children }) => {
 
   const closeModal2 = () => {
     setShowModal2(false);
+  };
+  const closeModal3 = () => {
+    setShowModal3(false);
   };
 
   const submitValuation = async () => {
@@ -249,6 +257,37 @@ export const JewelryProvider = ({ children }) => {
     }
   };
 
+  const CreateAuction = async (jew, startTime, endTime, auctioneerID) => {
+    const newAuction = {
+      jewelryID: jew._id,
+      startTime: startTime,
+      endTime: endTime,
+      auctioneerID: auctioneerID, // Include the selected auctioneer ID
+      status: "Scheduled",
+    };
+    const updatedJewelry = {
+      ...jew,
+      status: "Scheduled",
+      statusUpdateDate: new Date(),
+    };
+    try {
+      await axios.post(`http://localhost:5000/auction`, newAuction);
+      await axios.put(
+        `http://localhost:5000/jewelry/${selectedJewelry._id}`,
+        updatedJewelry
+      );
+      setJewelry((prevJewelry) =>
+        prevJewelry.map((jew) =>
+          jew._id === selectedJewelry._id ? { ...jew, ...updatedJewelry } : jew
+        )
+      );
+      closeModal3();
+      setSelectedJewelry(null);
+    } catch (error) {
+      console.error("Error creating auction: " + error);
+    }
+  };
+
   return (
     <JewelryContext.Provider
       value={{
@@ -262,10 +301,13 @@ export const JewelryProvider = ({ children }) => {
         setSelectedJewelry,
         showModal,
         showModal2,
+        showModal3,
         openModal,
         openModal2,
+        openModal3,
         closeModal,
         closeModal2,
+        closeModal3,
         valuation,
         setValuation,
         submitValuation,
@@ -276,6 +318,7 @@ export const JewelryProvider = ({ children }) => {
         ManagerReject,
         UserApprove,
         UserReject,
+        CreateAuction,
       }}
     >
       {children}

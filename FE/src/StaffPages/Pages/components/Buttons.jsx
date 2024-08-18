@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Badge from "react-bootstrap/Badge";
 import { Row } from "react-bootstrap";
+import { useJewelry } from "../../../ManagerPages/Pages/components/JewelryProvider";
+
 export default function Buttons() {
+  const { setSelected } = useJewelry();
   const nav = useNavigate();
-  const [selected, setSelected] = useState("All");
   const [buttons, setButtons] = useState([
     "All",
     "Valuation",
@@ -12,34 +14,35 @@ export default function Buttons() {
     "Delivery",
   ]);
   const [pills, setPills] = useState([]);
+  const [selectedButton, setSelectedButton] = useState("All");
+  const [selectedPill, setSelectedPill] = useState(null);
 
   const buttonStyle = {
-    borderRadius: "50px", // Makes the button pill-shaped
-    padding: "5px 20px", // Adjust padding as needed
-    fontSize: "16px", // Adjust font size as needed
-    backgroundColor: "white", // Button background color
-    color: "#007bff", // Button text color
+    borderRadius: "50px",
+    padding: "5px 20px",
+    fontSize: "16px",
+    backgroundColor: "white",
+    color: "#007bff",
     width: "150px",
-    cursor: "pointer", // Show pointer cursor on hover
-    transition: "background-color 0.3s ease", // Smooth transition effect
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
     border: "1px solid #007bff",
   };
 
   const hoverStyle = {
-    backgroundColor: "#007bff", // Change background on hover
+    backgroundColor: "#007bff",
     color: "white",
   };
 
-  // Handle mouse hover
-  const [isHovered, setIsHovered] = React.useState("");
+  const [isHovered, setIsHovered] = useState("");
 
   useEffect(() => {
-    switch (selected) {
+    switch (selectedButton) {
       case "Valuation":
         setPills(["Preliminary", "Waiting", "Final", "Confirmation"]);
         break;
       case "Auction":
-        setPills(["Schedule", "Ongoing", "Finished"]);
+        setPills(["Schedule", "Ongoing"]);
         break;
       case "Delivery":
         setPills(["Current", "Completed"]);
@@ -48,11 +51,20 @@ export default function Buttons() {
         setPills([]);
         break;
     }
-  }, [selected]);
+  }, [selectedButton]);
+
   const handleButton = (button) => {
+    setSelectedButton(button);
+    setSelectedPill(null); // Reset pill selection
     setSelected(button);
     nav(`/staff/${button}`);
   };
+
+  const handlePill = (pill) => {
+    setSelectedPill(pill);
+    setSelected(pill);
+  };
+
   return (
     <>
       <div style={{ backgroundColor: "whitesmoke" }}>
@@ -62,15 +74,14 @@ export default function Buttons() {
             style={{
               backgroundColor: "white",
               border: "none",
-              borderBottom: selected === button ? "5px solid #0d6efd" : "none",
-              color: selected === button ? "#0d6efd" : "black",
+              borderBottom:
+                selectedButton === button ? "5px solid #0d6efd" : "none",
+              color: selectedButton === button ? "#0d6efd" : "black",
               display: "inline-block",
               width: `${100 / buttons.length}%`,
               padding: "20px 0px",
             }}
-            onClick={() => {
-              handleButton(button);
-            }}
+            onClick={() => handleButton(button)}
           >
             {button}
           </button>
@@ -91,10 +102,13 @@ export default function Buttons() {
                 key={index}
                 style={{
                   ...buttonStyle,
-                  ...(isHovered === pill ? hoverStyle : {}),
+                  ...(isHovered === pill || selectedPill === pill
+                    ? hoverStyle
+                    : {}),
                 }}
                 onMouseEnter={() => setIsHovered(pill)}
                 onMouseLeave={() => setIsHovered("")}
+                onClick={() => handlePill(pill)}
               >
                 {pill}
               </button>
