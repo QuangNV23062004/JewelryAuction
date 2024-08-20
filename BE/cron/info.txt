@@ -1,0 +1,12 @@
+┌─────────────────────── second (optional): range: *, 0 - 59
+│ ┌───────────────────── minute :range *, 0 - 59
+│ │ ┌─────────────────── hour: range *, 0 - 23
+│ │ │ ┌───────────────── day of month: range *, 1 - 31
+│ │ │ │ ┌─────────────── month: range *, 1 - 12/ January,Febuary... December/ Jan, Feb, March...
+│ │ │ │ │ ┌───────────── day of week: range *, 0 - 7: 0 is the first sunday, 7 represent second sunday/ Monday,Tuesday,...Sunday
+│ │ │ │ │ │
+* * * * * *
+
+example: 
+* 16 * * * Sunday: every second of every 16th minute of every hrs of everyday of the month of the month on Sunday
+

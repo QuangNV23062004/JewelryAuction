@@ -257,12 +257,11 @@ export const JewelryProvider = ({ children }) => {
     }
   };
 
-  const CreateAuction = async (jew, startTime, endTime, auctioneerID) => {
+  const CreateAuction = async (jew, startTime, endTime) => {
     const newAuction = {
       jewelryID: jew._id,
       startTime: startTime,
       endTime: endTime,
-      auctioneerID: auctioneerID, // Include the selected auctioneer ID
       status: "Scheduled",
     };
     const updatedJewelry = {

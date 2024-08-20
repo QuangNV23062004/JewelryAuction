@@ -18,6 +18,74 @@ const getAllAuction = async (req, res) => {
   }
 };
 
+const UpdateAllAuctions = async (req = {}, res) => {
+  try {
+    const currentTime = new Date();
+
+    // Fetch all auctions that are either "Scheduled" or "Ongoing"
+    const auctions = await Auction.find({
+      status: { $in: ["Scheduled", "Ongoing"] },
+    });
+    console.log("Fetched all auctions with status 'Scheduled' or 'Ongoing'");
+
+    let hasUpdates = false;
+
+    // Iterate through auctions and update statuses as necessary
+    const updatedAuctions = await Promise.all(
+      auctions.map(async (auction) => {
+        let newStatus = null;
+
+        // Update status from "Scheduled" to "Ongoing"
+        if (
+          auction.status === "Scheduled" &&
+          currentTime >= auction.startTime
+        ) {
+          newStatus = "Ongoing";
+          console.log(`Starting auction ${auction._id} at ${currentTime}`);
+        }
+
+        // Update status from "Ongoing" to "Completed"
+        if (auction.status === "Ongoing" && currentTime >= auction.endTime) {
+          newStatus = "Completed";
+          console.log(`Ending auction ${auction._id} at ${currentTime}`);
+        }
+
+        if (newStatus) {
+          hasUpdates = true;
+          const updateData = { status: newStatus, ...(req.body || {}) };
+          const updatedAuction = await Auction.findByIdAndUpdate(
+            auction._id,
+            updateData,
+            { new: true }
+          );
+          return updatedAuction || auction;
+        }
+
+        return auction;
+      })
+    );
+
+    // Filter out any null values (if any update fails)
+    const nonNullAuctions = updatedAuctions.filter((a) => a !== null);
+
+    if (!hasUpdates) {
+      console.log("Nothing to update");
+      if (res) {
+        return res.status(200).json({ message: "Nothing to update" });
+      }
+    }
+
+    if (res) {
+      res.status(200).json(nonNullAuctions); // Return updated auctions
+    }
+  } catch (error) {
+    console.error("Error occurred during auction status update:", error);
+    if (res) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+};
+
 const getAuction = async (req, res) => {
   try {
     const auction = await Auction.findById(req.params.id);
@@ -62,4 +130,5 @@ module.exports = {
   getAuction,
   updateAuction,
   deleteAuction,
+  UpdateAllAuctions,
 };

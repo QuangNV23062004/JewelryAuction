@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-const CountdownTimer = ({ targetDate }) => {
-  const calculateTimeLeft = () => {
+const CountdownTimer = ({ startTime, endTime }) => {
+  const calculateTimeLeft = (targetDate) => {
     if (!targetDate) return {}; // Handle cases where targetDate is undefined
 
     const difference = +new Date(targetDate) - +new Date();
@@ -19,35 +19,70 @@ const CountdownTimer = ({ targetDate }) => {
     return timeLeft;
   };
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [timeLeft, setTimeLeft] = useState(() => {
+    if (!startTime || !endTime) {
+      return {}; // If no startTime or endTime, return an empty object
+    }
+    if (new Date() < new Date(startTime)) {
+      return calculateTimeLeft(startTime); // Before the start time
+    } else {
+      return calculateTimeLeft(endTime); // After the start time
+    }
+  });
 
   useEffect(() => {
+    if (!startTime || !endTime) return; // Exit early if no startTime or endTime
+
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      if (new Date() < new Date(startTime)) {
+        setTimeLeft(calculateTimeLeft(startTime)); // Before the start time
+      } else {
+        setTimeLeft(calculateTimeLeft(endTime)); // After the start time
+      }
     }, 1000);
 
     return () => clearInterval(timer); // Clear timer on component unmount
-  }, [targetDate]); // Re-run effect when targetDate changes
+  }, [startTime, endTime]); // Re-run effect when startTime or endTime changes
 
-  const timerComponents = [];
+  const renderTimerComponents = () => {
+    const timerComponents = [];
 
-  Object.keys(timeLeft).forEach((interval) => {
-    if (!timeLeft[interval]) {
-      return;
-    }
+    Object.keys(timeLeft).forEach((interval) => {
+      if (timeLeft[interval]) {
+        timerComponents.push(
+          <span key={interval}>
+            {timeLeft[interval]} {interval}{" "}
+          </span>
+        );
+      }
+    });
 
-    timerComponents.push(
-      <span key={interval}>
-        {timeLeft[interval]} {interval}{" "}
+    return timerComponents.length ? timerComponents : null;
+  };
+
+  if (!startTime || !endTime) {
+    return <span>Coming soon</span>;
+  }
+
+  if (new Date() < new Date(startTime)) {
+    return (
+      <span>
+        Starting in: {renderTimerComponents() || <span>Coming soon</span>}
       </span>
     );
-  });
-
-  return (
-    <span>
-      {timerComponents.length ? timerComponents : <span>Coming soon</span>}
-    </span>
-  );
+  } else if (
+    new Date() >= new Date(startTime) &&
+    new Date() < new Date(endTime)
+  ) {
+    return (
+      <span>
+        Started - Ending in:{" "}
+        {renderTimerComponents() || <span>Coming soon</span>}
+      </span>
+    );
+  } else {
+    return <span>Event has ended</span>;
+  }
 };
 
 export default CountdownTimer;

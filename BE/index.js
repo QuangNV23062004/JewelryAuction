@@ -28,6 +28,8 @@ mongoose
     console.log("Connected!");
     app.listen(5000, () => {
       console.log("Server is running on port 5000");
+      // Start the cron job after successfully connecting to the database
+      require("./cron/UpdateAuctionStatus");
     });
   })
   .catch((error) => console.log(error));

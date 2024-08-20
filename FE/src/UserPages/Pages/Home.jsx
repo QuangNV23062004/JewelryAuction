@@ -172,7 +172,8 @@ export default function Home() {
                         {" "}
                         <b>Countdown:</b>{" "}
                         <CountdownTimer
-                          targetDate={jew.startTime} // Pass the endTime from the auction
+                          startTime={jew.startTime}
+                          endTime={jew.endTime}
                         />
                       </ListGroup.Item>
                     </ListGroup>
