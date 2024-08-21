@@ -41,6 +41,11 @@ export default function MyJew() {
     { status: "Approved", color: "rgba(40, 167, 69, 1)", display: "Approved" },
     { status: "Rejected", color: "rgba(220, 53, 69, 1)", display: "Rejected" },
     {
+      status: "Scheduled",
+      color: "rgba(40, 167, 69, 1)",
+      display: "Scheduled",
+    },
+    {
       status: "Auctioned",
       color: "rgba(23, 162, 184, 1)",
       display: "Auctioned",

@@ -139,6 +139,11 @@ export default function ProductList() {
       display: "Rejected by user",
     },
     {
+      status: "Scheduled",
+      color: "rgba(40, 167, 69, 1)",
+      display: "Scheduled",
+    },
+    {
       status: "Auctioned",
       color: "rgba(23, 162, 184, 1)",
       display: "Auctioned",

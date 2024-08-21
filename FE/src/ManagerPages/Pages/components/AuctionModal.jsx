@@ -1,22 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { Form } from "react-bootstrap";
 import { useJewelry } from "./JewelryProvider";
+import axios from "axios";
 
 export default function AuctionModal() {
   const [auctionDetails, setAuctionDetails] = useState({
     startTime: "",
     endTime: "",
   });
+  const [staffs, setStaffs] = useState([]);
+  const [selectedStaffID, setSelectedStaffID] = useState("");
   const { CreateAuction, showModal3, closeModal3, selectedJewelry } =
     useJewelry();
 
+  // Fetch the list of auction staff members
+  useEffect(() => {
+    const fetchStaffs = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/user");
+        setStaffs(response.data.filter((user) => user.role === 2));
+      } catch (error) {
+        console.error("Error fetching auction staff:", error);
+      }
+    };
+
+    fetchStaffs();
+  }, []);
+
   const handleAuctionSave = () => {
-    if (selectedJewelry && auctionDetails.startTime && auctionDetails.endTime) {
+    if (
+      selectedJewelry &&
+      auctionDetails.startTime &&
+      auctionDetails.endTime &&
+      selectedStaffID
+    ) {
+      // Update the jewelry's assignedTo.AuctionStaff
+      const updatedJewelry = {
+        ...selectedJewelry,
+        assignedTo: {
+          ...selectedJewelry.assignedTo,
+          AuctionStaff: selectedStaffID,
+        },
+      };
+
+      // Create the auction
       CreateAuction(
-        selectedJewelry,
+        updatedJewelry,
         auctionDetails.startTime,
         auctionDetails.endTime
       );
@@ -75,6 +107,21 @@ export default function AuctionModal() {
                 })
               }
             />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Auction Staff</Form.Label>
+            <Form.Control
+              as="select"
+              value={selectedStaffID}
+              onChange={(e) => setSelectedStaffID(e.target.value)}
+            >
+              <option value="">Select Auction Staff</option>
+              {staffs.map((staff) => (
+                <option key={staff._id} value={staff._id}>
+                  {staff.fullName}
+                </option>
+              ))}
+            </Form.Control>
           </Form.Group>
         </Form>
       </Modal.Body>

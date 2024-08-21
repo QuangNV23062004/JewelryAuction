@@ -1,3 +1,4 @@
+// src/ManagerPages/Pages/components/Product.jsx
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
@@ -8,23 +9,24 @@ import Form from "react-bootstrap/Form";
 import Buttons from "./Buttons";
 import { useLocation } from "react-router-dom";
 import { useJewelry } from "./JewelryProvider";
-import AuctionModal from "./AuctionModal"; // Import the auction modal
+import AuctionModal from "./AuctionModal"; // Import the AuctionModal
 
 export default function Product({ userID }) {
   const {
     jewelry,
     setJewelry,
     setOriginal,
-    original,
     selected,
     ManagerApprove,
     ManagerReject,
-    openModal3,
+    openModal3, // Function to open the auction modal
+    showModal3, // State to control AuctionModal visibility
+    closeModal3, // Function to close the auction modal
+    selectedJewelry, // Jewelry item selected for auction
   } = useJewelry();
 
   const [staffs, setStaffs] = useState([]);
   const [staffID, setStaffID] = useState("");
-  const [selectedJewelry, setSelectedJewelry] = useState(null);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const loc = useLocation();
   const path = loc.pathname;
@@ -208,7 +210,14 @@ export default function Product({ userID }) {
         </Modal.Footer>
       </Modal>
 
-      {selectedJewelry && <AuctionModal></AuctionModal>}
+      {/* Auction Modal */}
+      {selectedJewelry && (
+        <AuctionModal
+          show={showModal3} // Control the visibility of AuctionModal
+          onHide={closeModal3} // Close the modal on demand
+        />
+      )}
+
       <div style={{ position: "fixed", width: "65%", zIndex: 1000 }}>
         <Buttons />
       </div>

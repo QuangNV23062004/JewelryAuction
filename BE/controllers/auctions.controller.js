@@ -26,7 +26,12 @@ const UpdateAllAuctions = async (req = {}, res) => {
     const auctions = await Auction.find({
       status: { $in: ["Scheduled", "Ongoing"] },
     });
-    console.log("Fetched all auctions with status 'Scheduled' or 'Ongoing'");
+    if (auctions)
+      console.log(
+        "Fetched all auctions with status 'Scheduled' or 'Ongoing': " +
+          auctions.length
+      );
+    else console.log("No auctions fetched");
 
     let hasUpdates = false;
 
