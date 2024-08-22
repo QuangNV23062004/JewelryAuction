@@ -28,6 +28,10 @@ const auctionSchema = new mongoose.Schema({
     type: Number,
     required: false,
   },
+  currentBid: {
+    type: Number,
+    required: false,
+  },
 });
 
 const Auction = mongoose.model("Auction", auctionSchema);

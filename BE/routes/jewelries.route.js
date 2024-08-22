@@ -6,13 +6,24 @@ const {
   getAllJewelry,
   getJewelry,
   updateJewelry,
+  getJewelryWithAuction,
 } = require("../controllers/jewelries.controller");
 
+// Route to get jewelry with associated auction data
+router.get("/with-auction", getJewelryWithAuction);
+// Route to get all jewelry
 router.get("/", getAllJewelry);
+
+// Route to get a specific piece of jewelry by ID
 router.get("/:id", getJewelry);
+
+// Route to create a new piece of jewelry
 router.post("/", createJewelry);
+
+// Route to update an existing piece of jewelry by ID
 router.put("/:id", updateJewelry);
+
+// Route to delete a piece of jewelry by ID
 router.delete("/:id", deleteJewelry);
-// router.get("/owner/:id",getJewelryByOwner);
-// router.get("/staff/:id",getJewelryByStaff);
+
 module.exports = router;
