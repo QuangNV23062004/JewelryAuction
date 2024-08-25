@@ -26,6 +26,7 @@ cron.schedule(
       const endTime = moment().tz("Asia/Ho_Chi_Minh").format();
       console.log("Cron job completed at:", endTime);
       console.log(`Total execution time: ${end - start}ms`);
+      console.log("Time stored in db in UTC");
     } catch (error) {
       console.error("Error occurred during cron job execution:", error);
     } finally {

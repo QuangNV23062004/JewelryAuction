@@ -11,6 +11,7 @@ import Process from "./Pages/Process";
 import Contact from "./Pages/Contact";
 import MyJew from "./Pages/MyJew";
 import Detail from "./Pages/Detail";
+import AuctionRoom from "./Pages/AuctionRoom";
 export default function UserPage() {
   return (
     <>
@@ -28,6 +29,7 @@ export default function UserPage() {
           <Route path="/about" element={<About />}></Route>
           <Route path="/auction-history" element={<MyJew />}></Route>
           <Route path="/detail/:id" element={<Detail />}></Route>
+          <Route path="/auction/:roomId" element={<AuctionRoom />}></Route>
         </Routes>
       </div>
       <Footer></Footer>

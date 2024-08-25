@@ -2,17 +2,25 @@ import React, { useState, useEffect } from "react";
 
 const CountdownTimer = ({ startTime, endTime }) => {
   const calculateTimeLeft = (targetDate) => {
-    if (!targetDate) return {}; // Handle cases where targetDate is undefined
+    if (!targetDate) return {};
 
     const difference = +new Date(targetDate) - +new Date();
+    // Calculate the time difference between now and the targetDate.
     let timeLeft = {};
 
     if (difference > 0) {
+      // If the difference is positive (targetDate is in the future), calculate time left.
       timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        months: Math.floor(difference / (1000 * 60 * 60 * 24 * 30)),
+        // Calculate remaining months.
+        days: Math.floor((difference / (1000 * 60 * 60 * 24)) % 30),
+        // Calculate remaining days
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        // Calculate remaining hours
         minutes: Math.floor((difference / 1000 / 60) % 60),
+        // Calculate remaining minutes
         seconds: Math.floor((difference / 1000) % 60),
+        // Calculate remaining seconds.
       };
     }
 
@@ -20,44 +28,53 @@ const CountdownTimer = ({ startTime, endTime }) => {
   };
 
   const [timeLeft, setTimeLeft] = useState(() => {
-    if (!startTime || !endTime) {
-      return {}; // If no startTime or endTime, return an empty object
-    }
+    if (!startTime || !endTime) return {};
+
     if (new Date() < new Date(startTime)) {
-      return calculateTimeLeft(startTime); // Before the start time
+      return calculateTimeLeft(startTime);
     } else {
-      return calculateTimeLeft(endTime); // After the start time
+      return calculateTimeLeft(endTime);
     }
+    // Determine if we are before the start time or after it.
   });
 
   useEffect(() => {
-    if (!startTime || !endTime) return; // Exit early if no startTime or endTime
+    if (!startTime || !endTime) return;
 
     const timer = setInterval(() => {
       if (new Date() < new Date(startTime)) {
-        setTimeLeft(calculateTimeLeft(startTime)); // Before the start time
+        setTimeLeft(calculateTimeLeft(startTime));
       } else {
-        setTimeLeft(calculateTimeLeft(endTime)); // After the start time
+        setTimeLeft(calculateTimeLeft(endTime));
       }
     }, 1000);
 
-    return () => clearInterval(timer); // Clear timer on component unmount
-  }, [startTime, endTime]); // Re-run effect when startTime or endTime changes
+    return () => clearInterval(timer);
+  }, [startTime, endTime]);
 
   const renderTimerComponents = () => {
-    const timerComponents = [];
+    const difference = +new Date(endTime) - +new Date();
+    const isLessThanOneHour = difference <= 1000 * 60 * 60;
 
-    Object.keys(timeLeft).forEach((interval) => {
-      if (timeLeft[interval]) {
-        timerComponents.push(
-          <span key={interval}>
-            {timeLeft[interval]} {interval}{" "}
-          </span>
-        );
-      }
-    });
+    if (isLessThanOneHour) {
+      return (
+        <span>
+          {timeLeft.minutes} minutes {timeLeft.seconds} seconds
+        </span>
+      );
+    } else if (timeLeft.days > 0) {
+      return (
+        <span>
+          {timeLeft.days} days {timeLeft.hours} hours
+        </span>
+      );
+    } else if (timeLeft.hours > 0) {
+      return <span>{timeLeft.hours} hours</span>;
+    } else if (timeLeft.months > 0) {
+      return <span>{timeLeft.months} months</span>;
+    }
 
-    return timerComponents.length ? timerComponents : null;
+    return null;
   };
 
   if (!startTime || !endTime) {
@@ -81,7 +98,7 @@ const CountdownTimer = ({ startTime, endTime }) => {
       </span>
     );
   } else {
-    return <span>Event has ended</span>;
+    return <span>Auction has ended</span>;
   }
 };
 
