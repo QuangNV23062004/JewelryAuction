@@ -8,6 +8,15 @@ const createBid = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+const createBid2 = async (bidData) => {
+  console.log("createBid2");
+  try {
+    const bid = await Bid.create(bidData);
+    return bid;
+  } catch (error) {
+    throw new Error("Error creating bid: " + error.message);
+  }
+};
 const getAllBid = async (req, res) => {
   try {
     const bid = await Bid.find();
@@ -51,11 +60,23 @@ const deleteBid = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+const updateAllBidToOutbid = async (auctionID) => {
+  console.log("Outbided all bid with id: " + auctionID);
+  try {
+    await Bid.updateMany(
+      { auctionID: auctionID, status: "Winning" },
+      { status: "Outbid" }
+    );
+  } catch (error) {
+    console.log("Error updating bids to Outbid: " + err.message);
+  }
+};
 module.exports = {
   createBid,
+  createBid2,
   getAllBid,
   getBid,
   updateBid,
   deleteBid,
+  updateAllBidToOutbid,
 };

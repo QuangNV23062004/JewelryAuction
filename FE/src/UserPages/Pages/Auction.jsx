@@ -110,7 +110,7 @@ export default function Auction() {
                                 <Button
                                   variant="outline-info"
                                   onClick={() => {
-                                    nav(`/auction/${au._id}`);
+                                    nav(`/auction/${au.auctionStatus._id}`);
                                   }}
                                 >
                                   Join bid

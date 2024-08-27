@@ -1,31 +1,59 @@
+const {
+  createBid2,
+  updateAllBidToOutbid,
+} = require("../controllers/bids.controller");
+const Auction = require("../models/auction.model");
+
 module.exports = function (io) {
-  // Handle connection
   io.on("connection", (socket) => {
     console.log("A user connected");
 
-    // Event: User joins a room
     socket.on("joinAuctionRoom", (roomId) => {
       socket.join(roomId);
       console.log(`User joined room: ${roomId}`);
     });
 
-    // Event: User places a bid
-    socket.on("placeBid", (data) => {
-      const { roomId, bidAmount } = data;
+    socket.on("placeBid", async (data) => {
+      const { roomId, bid } = data;
 
-      // Broadcast the new bid to others in the room
-      socket.to(roomId).emit("newBid", bidAmount);
+      try {
+        const auction = await Auction.findById(roomId);
 
-      // (Optional) Update the bid in the database here
-      // Example:
-      // Auction.findByIdAndUpdate(roomId, { currentBid: bidAmount }, (err) => {
-      //   if (err) console.error(err);
-      // });
+        if (!auction) {
+          console.log("no auctionID");
+          return socket.emit("error", "Auction not found");
+        }
 
-      console.log(`New bid in room ${roomId}: ${bidAmount}`);
+        if (!auction.currentBid || bid.bidAmount > auction.currentBid) {
+          console.log("case 1: more than currentBid");
+          if (auction.currentBid) {
+            await updateAllBidToOutbid(auction._id);
+          }
+
+          auction.currentBid = bid.bidAmount;
+          await auction.save();
+
+          bid.status = "Winning";
+        } else {
+          console.log("case 2: lower");
+          bid.status = "Outbid";
+        }
+
+        const newBid = await createBid2(bid);
+
+        socket.to(roomId).emit("newBid", {
+          amount: newBid.bidAmount,
+          user: newBid.userID,
+          status: newBid.status,
+        });
+
+        console.log(`New bid in room ${roomId}: ${newBid.bidAmount}`);
+      } catch (error) {
+        console.error("Error processing bid:", error);
+        socket.emit("error", error.message);
+      }
     });
 
-    // Handle disconnection
     socket.on("disconnect", () => {
       console.log("A user disconnected");
     });
