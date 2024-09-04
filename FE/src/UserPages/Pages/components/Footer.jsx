@@ -82,7 +82,8 @@ export default function Footer() {
                 <FontAwesomeIcon icon={faPhone} /> +123 456 7890
               </li>
               <li>
-                <FontAwesomeIcon icon={faEnvelope} /> info@jewelryhouse.com
+                <FontAwesomeIcon icon={faEnvelope} />{" "}
+                thejewelryhouse.auction@gmail.com
               </li>
             </ul>
           </Col>

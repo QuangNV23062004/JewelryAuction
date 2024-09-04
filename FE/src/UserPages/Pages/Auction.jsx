@@ -96,6 +96,17 @@ export default function Auction() {
                               endTime={au.auctionStatus.endTime}
                             />
                             <br />
+                            {au.auctionStatus.status === "Scheduled" &&
+                            new Date(au.auctionStatus.startTime) - new Date() <=
+                              3600000 &&
+                            new Date(au.auctionStatus.startTime) - new Date() >
+                              0 ? (
+                              <Button variant="outline-info">
+                                Place initial bid
+                              </Button>
+                            ) : (
+                              <></>
+                            )}
                             {au.auctionStatus.status === "Ongoing" ? (
                               <>
                                 {au.auctionStatus.currentBid ? (

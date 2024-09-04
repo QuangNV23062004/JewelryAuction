@@ -30,6 +30,7 @@ export default function UserPage() {
           <Route path="/auction-history" element={<MyJew />}></Route>
           <Route path="/detail/:id" element={<Detail />}></Route>
           <Route path="/auction/:roomId" element={<AuctionRoom />}></Route>
+          <Route path="/procedure" element={<Process />}></Route>
         </Routes>
       </div>
       <Footer></Footer>

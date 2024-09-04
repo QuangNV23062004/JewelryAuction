@@ -87,7 +87,7 @@ export default function Header() {
                     style={{ maxHeight: "100px" }}
                     navbarScroll
                   >
-                    {["Home", "Auction", "Contact", "About", "Process"].map(
+                    {["Home", "Auction", "Contact", "About", "Procedure"].map(
                       (item) => (
                         <Nav.Item key={item}>
                           <Link
