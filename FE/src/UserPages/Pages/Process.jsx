@@ -2,7 +2,7 @@ import Nav from "react-bootstrap/Nav";
 import React, { useState } from "react";
 
 export default function Process() {
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState("Sell");
 
   return (
     <>

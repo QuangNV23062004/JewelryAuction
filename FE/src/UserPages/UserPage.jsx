@@ -12,6 +12,7 @@ import Contact from "./Pages/Contact";
 import MyJew from "./Pages/MyJew";
 import Detail from "./Pages/Detail";
 import AuctionRoom from "./Pages/AuctionRoom";
+import InitialModal from "./Pages/components/InitialModal";
 export default function UserPage() {
   return (
     <>

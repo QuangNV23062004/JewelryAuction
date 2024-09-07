@@ -132,7 +132,7 @@ export default function Home() {
                   style={{ display: "flex", justifyContent: "center" }}
                   key={jew._id}
                 >
-                  <Card style={{ width: "18rem", height: 350 }}>
+                  <Card style={{ width: "18rem", cursor: "pointer" }}>
                     <Card.Img
                       variant="top"
                       src={jew.image}
@@ -155,30 +155,24 @@ export default function Home() {
                     >
                       <ListGroup.Item
                         style={{
-                          height: 100,
                           background: "rgba(0, 0, 0, 0.6)",
                         }}
                       >
                         <Card.Title>
-                          {" "}
                           <b style={{ color: "#e6e600" }}>{jew.name}</b>
                         </Card.Title>
                       </ListGroup.Item>
                       <ListGroup.Item>
-                        {" "}
                         <b>Category:</b> {jew.category}
                       </ListGroup.Item>
                       <ListGroup.Item>
-                        {" "}
-                        <b>Countdown:</b>{" "}
+                        <b>Countdown:</b>
                         <CountdownTimer
                           startTime={jew.startTime}
                           endTime={jew.endTime}
                         />
                       </ListGroup.Item>
                     </ListGroup>
-
-                    <Card.Body></Card.Body>
                   </Card>
                 </Col>
               ))}
@@ -216,7 +210,11 @@ export default function Home() {
                       }}
                     >
                       <Card
-                        style={{ width: "100%", border: "2px solid black" }}
+                        style={{
+                          width: "100%",
+                          border: "2px solid black",
+                          cursor: "pointer",
+                        }}
                       >
                         <Card.Img
                           variant="top"

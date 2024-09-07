@@ -5,10 +5,20 @@ import axios from "axios";
 import { Col, Row } from "react-bootstrap";
 import CountdownTimer from "./components/CountdownTimer";
 import { useNavigate } from "react-router-dom";
+import { useJewelry } from "../../ManagerPages/Pages/components/JewelryProvider";
+import InitialModal from "./components/InitialModal";
 
 export default function Auction() {
   const [auctions, setAuctions] = useState([]);
   const [hoveredCardId, setHoveredCardId] = useState(null);
+  const {
+    openModal4,
+    auction,
+    setAuction,
+    closeModal4,
+    showModal4,
+    selectedJewelry,
+  } = useJewelry();
   const nav = useNavigate();
   const fetchData = async () => {
     try {
@@ -18,7 +28,6 @@ export default function Auction() {
       setAuctions(
         auctionsResponse.data.sort((a, b) => new Date(a) - new Date(b))
       );
-      console.log(auctions);
     } catch (error) {
       console.error("Error fetching auctions:", error);
     }
@@ -35,9 +44,33 @@ export default function Auction() {
   const handleMouseLeave = () => {
     setHoveredCardId(null);
   };
+  const handleOpenModal = async (au) => {
+    // console.log(au);
+    // console.log("jewId: " + au._id + ",AuId: " + au.auctionStatus._id);
+    try {
+      const Jewresponse = await axios.get(
+        `http://localhost:5000/jewelry/${au._id}`
+      );
+      const AuResponse = await axios.get(
+        `http://localhost:5000/auction/${au.auctionStatus._id}`
+      );
+      const jewelry = Jewresponse.data;
+      const auction = AuResponse.data;
+      // console.log("jewelry: ");
+      // console.log(jewelry);
+      // console.log("auction: ");
+      // console.log(auction);
+      openModal4(auction, jewelry);
+    } catch (error) {
+      console.log("Error handle open Modal");
+    }
+  };
 
   return (
     <>
+      {selectedJewelry && (
+        <InitialModal show={showModal4} onHide={closeModal4} />
+      )}
       <Row style={{ marginTop: 20 }}>
         {auctions &&
           auctions.map((au) => (
@@ -49,6 +82,12 @@ export default function Auction() {
                   borderRadius: 5,
                   border: "1px solid black",
                 }}
+                onMouseEnter={() => {
+                  setHoveredCardId(au._id);
+                }} // Moved onMouseEnter to Card level
+                onMouseLeave={() => {
+                  setHoveredCardId(null);
+                }} // Moved onMouseLeave to Card level
               >
                 <Card.Img
                   src={au.image}
@@ -59,10 +98,7 @@ export default function Auction() {
                     borderRadius: 5,
                   }}
                 ></Card.Img>
-                <Card.Body
-                  style={{ position: "absolute" }}
-                  onMouseLeave={() => handleMouseLeave()}
-                >
+                <Card.Body style={{ position: "absolute" }}>
                   <>
                     {au._id === hoveredCardId ? (
                       <>
@@ -83,9 +119,10 @@ export default function Auction() {
                             borderRadius: 5,
                             zIndex: 2,
                             transition: "all 0.3s ease-in-out",
+                            padding: "0px 20px",
                           }}
                         >
-                          <Card.Text>
+                          <div>
                             <h5 style={{ fontWeight: 600, fontSize: 22 }}>
                               {au.name}
                             </h5>
@@ -98,10 +135,16 @@ export default function Auction() {
                             <br />
                             {au.auctionStatus.status === "Scheduled" &&
                             new Date(au.auctionStatus.startTime) - new Date() <=
-                              3600000 &&
+                              60 * 60000 * 24 &&
                             new Date(au.auctionStatus.startTime) - new Date() >
                               0 ? (
-                              <Button variant="outline-info">
+                              <Button
+                                variant="outline-info"
+                                onClick={() => {
+                                  handleOpenModal(au);
+                                  // console.log(au);
+                                }}
+                              >
                                 Place initial bid
                               </Button>
                             ) : (
@@ -119,7 +162,7 @@ export default function Auction() {
                                 )}
                                 <br />
                                 <Button
-                                  variant="outline-info"
+                                  variant="outline-success"
                                   onClick={() => {
                                     nav(`/auction/${au.auctionStatus._id}`);
                                   }}
@@ -130,17 +173,13 @@ export default function Auction() {
                             ) : (
                               <></>
                             )}
-                          </Card.Text>
+                          </div>
                         </div>
                       </>
                     ) : (
                       <>
-                        <div
-                          style={{
-                            height: "180px",
-                          }}
-                          onMouseEnter={() => handleMouseEnter(au._id)}
-                        ></div>
+                        {" "}
+                        {/* default overlay */}
                         <div
                           style={{
                             backgroundColor:
@@ -152,11 +191,18 @@ export default function Auction() {
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
-
-                            height: "100px",
-                            width: "330px",
+                            padding: "5px 10px",
+                            width: "361px", //why is px is in width but 100% make it a column
                             zIndex: 2,
                             transition: "all 0.3s ease-in-out",
+                            bottom: -267,
+                            borderRadius: 5,
+                            marginLeft: -16,
+                            position: "absolute",
+                          }}
+                          onMouseEnter={() => handleMouseEnter(null)}
+                          onMouseLeave={() => {
+                            setHoveredCardId(au._id);
                           }}
                         >
                           <Row>

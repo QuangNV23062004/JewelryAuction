@@ -11,10 +11,12 @@ export const JewelryProvider = ({ children }) => {
   const [original, setOriginal] = useState([]);
   const [selected, setSelected] = useState("All");
   const [selectedJewelry, setSelectedJewelry] = useState(null);
+  const [auction, setAuction] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [valuation, setValuation] = useState(0);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
+  const [showModal4, setShowModal4] = useState(false);
   useEffect(() => {
     fetchData();
   }, []);
@@ -47,6 +49,11 @@ export const JewelryProvider = ({ children }) => {
     setSelectedJewelry(jewelry);
     setShowModal3(true);
   };
+  const openModal4 = (auction, jewelry) => {
+    setAuction(auction);
+    setSelectedJewelry(jewelry);
+    setShowModal4(true);
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -57,6 +64,9 @@ export const JewelryProvider = ({ children }) => {
   };
   const closeModal3 = () => {
     setShowModal3(false);
+  };
+  const closeModal4 = () => {
+    setShowModal4(false);
   };
 
   const submitValuation = async () => {
@@ -286,6 +296,32 @@ export const JewelryProvider = ({ children }) => {
       console.error("Error creating auction: " + error);
     }
   };
+  const SendInitialPrice = async (Bid) => {
+    if (!auction || !Bid) {
+      return;
+    }
+    try {
+      const auctionResponse = await axios.put(
+        `http://localhost:5000/auction/${auction._id}`,
+        {
+          ...auction,
+          currentBid:
+            Bid.bidAmount <= auction.currentBid
+              ? auction.currentBid
+              : Bid.bidAmount,
+        }
+      );
+      const BidResponse = await axios.post("http://localhost:5000/bid", Bid);
+      if (!auctionResponse) {
+        console.log("Error updating auction");
+      }
+      if (!BidResponse) {
+        console.log("Error creating bid");
+      }
+    } catch (error) {
+      console.log("error while setting initial price: " + error);
+    }
+  };
 
   return (
     <JewelryContext.Provider
@@ -298,15 +334,20 @@ export const JewelryProvider = ({ children }) => {
         setSelected,
         selectedJewelry,
         setSelectedJewelry,
+        auction,
+        setAuction,
         showModal,
         showModal2,
         showModal3,
+        showModal4,
         openModal,
         openModal2,
         openModal3,
+        openModal4,
         closeModal,
         closeModal2,
         closeModal3,
+        closeModal4,
         valuation,
         setValuation,
         submitValuation,
@@ -318,6 +359,7 @@ export const JewelryProvider = ({ children }) => {
         UserApprove,
         UserReject,
         CreateAuction,
+        SendInitialPrice,
       }}
     >
       {children}
