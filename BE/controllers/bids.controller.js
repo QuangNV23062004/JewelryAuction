@@ -17,6 +17,27 @@ const createBid2 = async (bidData) => {
     throw new Error("Error creating bid: " + error.message);
   }
 };
+const getAllBidWithAuctionId = async (auctionID) => {
+  try {
+    const bids = await Bid.find({ auctionID: auctionID }).sort({
+      bidAmount: -1,
+    });
+
+    if (bids.length === 0) {
+      console.log("No bids found with auctionID: " + auctionID);
+      return [];
+    }
+
+    return bids;
+  } catch (error) {
+    console.error(
+      "Error getting bids for auction: " + auctionID,
+      error.message
+    );
+    throw new Error("Error getting bids: " + error.message); // Properly throw the error
+  }
+};
+
 const getAllBid = async (req, res) => {
   try {
     const bid = await Bid.find();
@@ -79,4 +100,5 @@ module.exports = {
   updateBid,
   deleteBid,
   updateAllBidToOutbid,
+  getAllBidWithAuctionId,
 };

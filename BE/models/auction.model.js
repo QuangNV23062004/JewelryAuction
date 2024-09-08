@@ -16,7 +16,7 @@ const auctionSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Scheduled", "Ongoing", "Completed", "Cancelled"], // Status options
+    enum: ["Scheduled", "Ongoing", "Completed", "Cancelled", "Unbidded"], // Status options
     required: true,
   },
   winner: {

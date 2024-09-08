@@ -51,6 +51,25 @@ const updateJewelry = async (req, res) => {
   }
 };
 
+const updateJewelry2 = async (jew, newStatus) => {
+  try {
+    const jewelry = await Jewelry.findByIdAndUpdate(
+      jew,
+      { status: newStatus, ...jew },
+      {
+        new: true,
+      }
+    );
+    if (!jewelry) {
+      console.log("No jewelry found");
+      return null;
+    }
+    return jewelry;
+  } catch (error) {
+    console.log("Error updating jewelry backend: " + error);
+  }
+};
+
 // Delete Jewelry by ID
 const deleteJewelry = async (req, res) => {
   try {
@@ -127,5 +146,6 @@ module.exports = {
   getJewelry,
   updateJewelry,
   deleteJewelry,
-  getJewelryWithAuction, // Export the new aggregation method
+  getJewelryWithAuction,
+  updateJewelry2,
 };

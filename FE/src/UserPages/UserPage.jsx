@@ -32,6 +32,7 @@ export default function UserPage() {
           <Route path="/detail/:id" element={<Detail />}></Route>
           <Route path="/auction/:roomId" element={<AuctionRoom />}></Route>
           <Route path="/procedure" element={<Process />}></Route>
+          <Route path="/auction/category/:cat" element={<Auction />}></Route>
         </Routes>
       </div>
       <Footer></Footer>

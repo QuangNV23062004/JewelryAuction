@@ -1,5 +1,7 @@
 const Auction = require("../models/auction.model");
 
+const { getAllBidWithAuctionId } = require("./bids.controller");
+const { updateJewelry2 } = require("./jewelries.controller");
 const createAuction = async (req, res) => {
   try {
     const auction = await Auction.create(req.body);
@@ -18,6 +20,7 @@ const getAllAuction = async (req, res) => {
   }
 };
 
+// Iterate through auctions and update statuses as necessary
 const UpdateAllAuctions = async (req = {}, res) => {
   try {
     const currentTime = new Date();
@@ -26,12 +29,18 @@ const UpdateAllAuctions = async (req = {}, res) => {
     const auctions = await Auction.find({
       status: { $in: ["Scheduled", "Ongoing"] },
     });
-    if (auctions)
+
+    if (auctions.length === 0) {
+      console.log("No auctions fetched with status 'Scheduled' or 'Ongoing'.");
+      if (res)
+        return res.status(200).json({ message: "No auctions to update." });
+      return;
+    } else {
       console.log(
         "Fetched all auctions with status 'Scheduled' or 'Ongoing': " +
           auctions.length
       );
-    else console.log("No auctions fetched");
+    }
 
     let hasUpdates = false;
 
@@ -40,6 +49,8 @@ const UpdateAllAuctions = async (req = {}, res) => {
       auctions.map(async (auction) => {
         let newStatus = null;
 
+        // Fetch the highest bid related to the auction
+
         // Update status from "Scheduled" to "Ongoing"
         if (
           auction.status === "Scheduled" &&
@@ -47,17 +58,42 @@ const UpdateAllAuctions = async (req = {}, res) => {
         ) {
           newStatus = "Ongoing";
           console.log(`Starting auction ${auction._id} at ${currentTime}`);
+          await updateJewelry2(auction.jewelryID, "Auctioned");
+          console.log("");
         }
 
-        // Update status from "Ongoing" to "Completed"
+        // Update status from "Ongoing" to "Completed" or "Unbidded"
         if (auction.status === "Ongoing" && currentTime >= auction.endTime) {
-          newStatus = "Completed";
-          console.log(`Ending auction ${auction._id} at ${currentTime}`);
+          const bids = await getAllBidWithAuctionId(auction._id);
+          const highestBid = bids.length > 0 ? bids[0] : null;
+          if (highestBid) {
+            newStatus = "Completed";
+            console.log(`Ending auction ${auction._id} at ${currentTime}`);
+            await updateJewelry2(auction.jewelryID, "Sold");
+          } else {
+            newStatus = "Unbidded";
+            console.log(
+              `Ending auction ${auction._id} as Unbidded at ${currentTime}`
+            );
+          }
         }
 
         if (newStatus) {
           hasUpdates = true;
-          const updateData = { status: newStatus, ...(req.body || {}) };
+          let updateData = null;
+
+          // Prepare update data based on the new status
+          if (newStatus === "Completed" && highestBid) {
+            updateData = {
+              status: newStatus,
+              winnerBid: highestBid.bidAmount,
+              winner: highestBid.userID,
+              ...(req.body || {}),
+            };
+          } else {
+            updateData = { status: newStatus, ...(req.body || {}) };
+          }
+
           const updatedAuction = await Auction.findByIdAndUpdate(
             auction._id,
             updateData,

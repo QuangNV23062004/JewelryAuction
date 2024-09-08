@@ -7,6 +7,7 @@ import axios from "axios";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import CountdownTimer from "./components/CountdownTimer";
+import { Link, useNavigate } from "react-router-dom";
 
 const responsive = {
   superLargeDesktop: {
@@ -38,6 +39,7 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [feedback, setFeedback] = useState([]);
   const [auctions, setAuctions] = useState([]);
+  const nav = useNavigate();
   const link = {
     Ring: "https://i5.walmartimages.com/asr/c7fab786-8103-4f9f-91b3-b9c37af9ae6f.bd6c1972b42a459b7794e8faf5236bf3.jpeg?odnWidth=1000&odnHeight=1000&odnBg=ffffff",
     Brooch:
@@ -132,14 +134,19 @@ export default function Home() {
                   style={{ display: "flex", justifyContent: "center" }}
                   key={jew._id}
                 >
-                  <Card style={{ width: "18rem", cursor: "pointer" }}>
+                  <Card
+                    style={{ width: "18rem", cursor: "pointer" }}
+                    onClick={() => {
+                      nav(`/detail/${jew._id}`);
+                    }}
+                  >
                     <Card.Img
                       variant="top"
                       src={jew.image}
                       style={{
                         position: "relative",
                         border: "1px solid black",
-                        height: "85%",
+                        height: "75%",
                       }}
                     />
 
@@ -214,6 +221,9 @@ export default function Home() {
                           width: "100%",
                           border: "2px solid black",
                           cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          nav(`/auction/category/${cat}`);
                         }}
                       >
                         <Card.Img

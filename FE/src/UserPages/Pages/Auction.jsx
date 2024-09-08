@@ -4,11 +4,12 @@ import Card from "react-bootstrap/Card";
 import axios from "axios";
 import { Col, Row } from "react-bootstrap";
 import CountdownTimer from "./components/CountdownTimer";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useJewelry } from "../../ManagerPages/Pages/components/JewelryProvider";
 import InitialModal from "./components/InitialModal";
 
 export default function Auction() {
+  const { cat } = useParams();
   const [auctions, setAuctions] = useState([]);
   const [hoveredCardId, setHoveredCardId] = useState(null);
   const {
@@ -20,14 +21,22 @@ export default function Auction() {
     selectedJewelry,
   } = useJewelry();
   const nav = useNavigate();
+  const loc = useLocation();
   const fetchData = async () => {
     try {
       const auctionsResponse = await axios.get(
         "http://localhost:5000/jewelry/with-auction"
       );
-      setAuctions(
-        auctionsResponse.data.sort((a, b) => new Date(a) - new Date(b))
-      );
+      if (!cat) {
+        setAuctions(
+          auctionsResponse.data.sort((a, b) => new Date(a) - new Date(b))
+        );
+      } else
+        setAuctions(
+          auctionsResponse.data
+            .sort((a, b) => new Date(a) - new Date(b))
+            .filter((c) => cat.toLowerCase() === c.category.toLowerCase())
+        );
     } catch (error) {
       console.error("Error fetching auctions:", error);
     }
@@ -219,7 +228,12 @@ export default function Auction() {
                               />
                             </Col>
                             <Col md={4}>
-                              <Button variant="outline-info">Detail</Button>
+                              <Button
+                                variant="outline-info"
+                                onClick={() => nav(`/detail/${au._id}`)}
+                              >
+                                Detail
+                              </Button>
                             </Col>
                           </Row>
                         </div>
