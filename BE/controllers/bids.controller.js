@@ -8,11 +8,11 @@ const createBid = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-const createBid2 = async (bidData) => {
-  console.log("createBid2");
+const createBid2 = async (bidData, session = {}) => {
+  console.log("Creating new bid");
   try {
-    const bid = await Bid.create(bidData);
-    return bid;
+    const bid = await Bid.create([bidData], { session }); // Pass session for transactional bid creation
+    return bid[0]; // Return the newly created bid
   } catch (error) {
     throw new Error("Error creating bid: " + error.message);
   }

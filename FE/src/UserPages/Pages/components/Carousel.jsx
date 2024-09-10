@@ -50,7 +50,7 @@ function Carouseler() {
           border: "1px solid #f1f1f1",
           padding: "20px 50px",
           position: "absolute",
-          top: "95%",
+          top: "90%",
           left: "50%",
           transform: "translate(-50%, -50%)",
           textAlign: "center",

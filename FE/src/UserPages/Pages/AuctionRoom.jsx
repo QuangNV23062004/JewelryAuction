@@ -112,7 +112,7 @@ const AuctionRoom = () => {
                             endTime={currentAu.auctionStatus?.endTime}
                           />
                           <br />
-                          Current Bid:{" "}
+                          Current Bid: $
                           {currentBid?.amount ||
                             currentAu.auctionStatus?.currentBid ||
                             "No bids yet"}

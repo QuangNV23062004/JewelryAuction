@@ -54,7 +54,7 @@ const updateJewelry = async (req, res) => {
 const updateJewelry2 = async (jew, newStatus) => {
   try {
     const jewelry = await Jewelry.findByIdAndUpdate(
-      jew,
+      jew._id,
       { status: newStatus, ...jew },
       {
         new: true,

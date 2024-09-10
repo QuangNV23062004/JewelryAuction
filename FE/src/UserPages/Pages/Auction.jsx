@@ -4,9 +4,11 @@ import Card from "react-bootstrap/Card";
 import axios from "axios";
 import { Col, Row } from "react-bootstrap";
 import CountdownTimer from "./components/CountdownTimer";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useJewelry } from "../../ManagerPages/Pages/components/JewelryProvider";
 import InitialModal from "./components/InitialModal";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Auction() {
   const { cat } = useParams();
@@ -81,6 +83,7 @@ export default function Auction() {
         <InitialModal show={showModal4} onHide={closeModal4} />
       )}
       <Row style={{ marginTop: 20 }}>
+        <ToastContainer></ToastContainer>
         {auctions &&
           auctions.map((au) => (
             <Col md={3} style={{ marginBottom: 20 }} key={au._id}>
@@ -118,7 +121,7 @@ export default function Auction() {
                                 ? "rgba(0,0,0,0.8)"
                                 : "transparent",
                             position: "relative",
-                            color: "#0dcaf0",
+                            color: "white",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
@@ -132,7 +135,13 @@ export default function Auction() {
                           }}
                         >
                           <div>
-                            <h5 style={{ fontWeight: 600, fontSize: 22 }}>
+                            <h5
+                              style={{
+                                fontWeight: 600,
+                                fontSize: 22,
+                                color: "gold",
+                              }}
+                            >
                               {au.name}
                             </h5>
                             Type: {au.category}
@@ -173,7 +182,37 @@ export default function Auction() {
                                 <Button
                                   variant="outline-success"
                                   onClick={() => {
-                                    nav(`/auction/${au.auctionStatus._id}`);
+                                    const user = sessionStorage.getItem("user");
+                                    if (user) {
+                                      nav(`/auction/${au.auctionStatus._id}`);
+                                    } else {
+                                      toast.warn(
+                                        <>
+                                          You need to login to bid,to login
+                                          please click{" "}
+                                          <Link
+                                            to="/login"
+                                            style={{
+                                              color: "white",
+                                              cursor: "pointer",
+                                            }}
+                                          >
+                                            here
+                                          </Link>
+                                        </>,
+                                        {
+                                          position: "top-right",
+                                          autoClose: 5000,
+                                          hideProgressBar: false,
+                                          closeOnClick: true,
+                                          pauseOnHover: true,
+                                          draggable: true,
+                                          progress: undefined,
+                                          theme: "colored",
+                                          transition: Bounce,
+                                        }
+                                      );
+                                    }
                                   }}
                                 >
                                   Join bid
@@ -196,7 +235,7 @@ export default function Auction() {
                                 ? "rgba(0,0,0,0.8)"
                                 : "rgba(0,0,0,0.6)",
                             position: "relative",
-                            color: "#0dcaf0",
+                            color: "white",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
@@ -216,7 +255,13 @@ export default function Auction() {
                         >
                           <Row>
                             <Col md={12}>
-                              <h5 style={{ fontWeight: 600, fontSize: 22 }}>
+                              <h5
+                                style={{
+                                  fontWeight: 600,
+                                  fontSize: 22,
+                                  color: "gold",
+                                }}
+                              >
                                 {au.name}
                               </h5>
                             </Col>
@@ -244,6 +289,23 @@ export default function Auction() {
               </Card>
             </Col>
           ))}
+        {auctions.length === 0 && cat !== null ? (
+          <Row
+            style={{
+              height: 500,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {" "}
+            <div style={{ textAlign: "center" }}>
+              No auction available for {cat}
+            </div>
+          </Row>
+        ) : (
+          <></>
+        )}
       </Row>
     </>
   );

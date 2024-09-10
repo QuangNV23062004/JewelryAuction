@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Carouseler from "./components/Carousel";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Button } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
@@ -8,7 +8,8 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import CountdownTimer from "./components/CountdownTimer";
 import { Link, useNavigate } from "react-router-dom";
-
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const responsive = {
   superLargeDesktop: {
     breakpoint: { max: 4000, min: 1024 },
@@ -31,6 +32,22 @@ const responsive = {
     slidesToSlide: 1,
   },
 };
+function formatDate(dateString) {
+  if (!dateString) {
+    return "N/A";
+  }
+  const date = new Date(dateString);
+
+  const day = String(date.getDate()).padStart(2, "0"); // Get day and pad with leading zero
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (0-indexed) and pad with leading zero
+  const year = date.getFullYear(); // Get full year
+
+  const hours = String(date.getHours()).padStart(2, "0"); // Get hours and pad with leading zero
+  const minutes = String(date.getMinutes()).padStart(2, "0"); // Get minutes and pad with leading zero
+  const seconds = String(date.getSeconds()).padStart(2, "0"); // Get seconds and pad with leading zero
+
+  return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}s`; // Format and return the date string
+}
 
 export default function Home() {
   const [jewelry, setJewelry] = useState([]);
@@ -59,42 +76,73 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const jewelryResponse = await axios.get(`http://localhost:5000/jewelry`);
-      const auctionResponse = await axios.get("http://localhost:5000/auction");
+      const jewelryResponse = await axios.get(
+        `http://localhost:5000/jewelry/with-auction`
+      );
 
       const fetchedJewelry = jewelryResponse.data;
-      const fetchedAuctions = auctionResponse.data;
-
+      console.log(fetchedJewelry);
+      // Set jewelry data
       setJewelry(fetchedJewelry);
+
+      // Extract auctions from each jewelry's auctionStatus
+      const fetchedAuctions = fetchedJewelry.map((jew) => jew.auctionStatus);
       setAuctions(fetchedAuctions);
 
+      // Sort by date for new arrivals
       const sortedByDate = [...fetchedJewelry].sort(
         (a, b) => new Date(b.statusUpdateDate) - new Date(a.statusUpdateDate)
       );
 
-      // Combine jewelry data with corresponding auction data
-      const newJewWithAuctions = sortedByDate.slice(0, 4).map((jew) => {
-        const auction = fetchedAuctions.find(
-          (auc) => auc.jewelryID === jew._id
-        );
-        return {
-          ...jew,
-          startTime: auction ? auction.startTime : null,
-          endTime: auction ? auction.endTime : null,
-        };
-      });
+      // New arrivals with auction data
+      setNewJew(sortedByDate.slice(0, 4));
+      const sortedByPrice = fetchedJewelry
+        .filter(
+          (jew) =>
+            jew.auctionStatus?.winnerBid !== undefined &&
+            jew.auctionStatus?.winnerBid !== null
+        )
+        .sort((a, b) => b.auctionStatus.winnerBid - a.auctionStatus.winnerBid);
+      // Sort by price for expensive jewelry
+      let expensiveItems;
+      const auctionObject = {
+        _id: null,
+        name: null,
+        description: null,
+        image: null,
+        category: null,
+        status: null,
+        owner: null,
+        auctionDetails: null,
+        statusUpdateDate: null,
+        createAt: null,
+        assignedTo: null,
+        auctionStatus: {
+          _id: null,
+          jewelryID: null,
+          startTime: null,
+          endTime: null,
+          status: null,
+          winner: null,
+          winnerBid: null,
+          currentBid: null,
+        },
+      };
 
-      setNewJew(newJewWithAuctions);
-      console.log(newjew);
-      const sortedByPrice = [...fetchedJewelry].sort(
-        (a, b) => b.finalizedPrice?.value - a.finalizedPrice?.value
-      );
-      [sortedByPrice[0], sortedByPrice[1]] = [
-        sortedByPrice[1],
-        sortedByPrice[0],
-      ];
-      setExpensive(sortedByPrice.slice(0, 3));
+      if (sortedByPrice.length === 1) {
+        // If only one item, create two nulls, put the item in the second position
+        expensiveItems = [auctionObject, sortedByPrice[0], auctionObject];
+      } else if (sortedByPrice.length === 2) {
+        // If two items, create one null and place them in the first two positions
+        expensiveItems = [sortedByPrice[1], sortedByPrice[0], auctionObject];
+      } else {
+        // If three or more, return the top 3 items
+        expensiveItems = sortedByPrice.slice(0, 3);
+      }
 
+      // Set the result
+      setExpensive(expensiveItems);
+      // Extract unique categories
       const uniqueCategories = [
         ...new Set(fetchedJewelry.map((item) => item.category)),
       ];
@@ -111,7 +159,7 @@ export default function Home() {
   return (
     <>
       <Carouseler></Carouseler>
-
+      <ToastContainer></ToastContainer>
       <Row style={{ margin: "40px 0px" }}>
         <Col md={12}>
           <div style={{ marginBottom: 40 }}>
@@ -134,12 +182,7 @@ export default function Home() {
                   style={{ display: "flex", justifyContent: "center" }}
                   key={jew._id}
                 >
-                  <Card
-                    style={{ width: "18rem", cursor: "pointer" }}
-                    onClick={() => {
-                      nav(`/detail/${jew._id}`);
-                    }}
-                  >
+                  <Card style={{ width: "18rem" }}>
                     <Card.Img
                       variant="top"
                       src={jew.image}
@@ -147,6 +190,10 @@ export default function Home() {
                         position: "relative",
                         border: "1px solid black",
                         height: "75%",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        nav(`/detail/${jew._id}`);
                       }}
                     />
 
@@ -154,7 +201,7 @@ export default function Home() {
                       className="list-group-flush"
                       style={{
                         position: "absolute",
-                        top: "54%",
+                        bottom: "0%",
                         width: "100%",
                         border: "1px solid black",
                         borderRadius: "0px 0px 5px 5px",
@@ -165,9 +212,58 @@ export default function Home() {
                           background: "rgba(0, 0, 0, 0.6)",
                         }}
                       >
-                        <Card.Title>
-                          <b style={{ color: "#e6e600" }}>{jew.name}</b>
-                        </Card.Title>
+                        <Row>
+                          <Col md={9}>
+                            <Card.Title
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                nav(`/detail/${jew._id}`);
+                              }}
+                            >
+                              <b style={{ color: "#e6e600" }}>{jew.name}</b>
+                            </Card.Title>
+                          </Col>
+                          <Col md={3}>
+                            <Button
+                              variant="outline-warning"
+                              onClick={() => {
+                                const user = sessionStorage.getItem("user");
+                                if (user) {
+                                  nav(`/auction/${au.auctionStatus._id}`);
+                                } else {
+                                  toast.warn(
+                                    <>
+                                      You need to login to bid,to login please
+                                      click{" "}
+                                      <Link
+                                        to="/login"
+                                        style={{
+                                          color: "white",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        here
+                                      </Link>
+                                    </>,
+                                    {
+                                      position: "top-right",
+                                      autoClose: 5000,
+                                      hideProgressBar: false,
+                                      closeOnClick: true,
+                                      pauseOnHover: true,
+                                      draggable: true,
+                                      progress: undefined,
+                                      theme: "colored",
+                                      transition: Bounce,
+                                    }
+                                  );
+                                }
+                              }}
+                            >
+                              Bid
+                            </Button>
+                          </Col>
+                        </Row>
                       </ListGroup.Item>
                       <ListGroup.Item>
                         <b>Category:</b> {jew.category}
@@ -309,7 +405,10 @@ export default function Home() {
                   >
                     <Card.Img
                       variant="top"
-                      src={ex.image}
+                      src={
+                        ex.image ||
+                        "https://hesolutions.com.pk/wp-content/uploads/2019/01/picture-not-available.jpg"
+                      }
                       style={{ height: "50%", objectFit: "cover" }}
                     />
                     <Card.Body>
@@ -325,24 +424,26 @@ export default function Home() {
                           alignItems: "center",
                         }}
                       >
-                        <b>{ex.name}</b>
+                        <b>{ex.name || "N/A"}</b>
                       </Card.Title>
                       <ListGroup className="list-group-flush">
                         <ListGroup.Item
                           style={{ backgroundColor: "transparent" }}
                         >
-                          <b>Category:</b> {ex.category}
+                          <b>Category:</b> {ex.category || "N/A"}
                         </ListGroup.Item>
                         <ListGroup.Item
                           style={{ backgroundColor: "transparent" }}
                         >
-                          <b>Auctioned price: </b>
-                          {ex.finalizedPrice}
+                          <b>Auctioned price: </b>$
+                          {ex.auctionStatus?.winnerBid || 0}
                         </ListGroup.Item>
                         <ListGroup.Item
                           style={{ backgroundColor: "transparent" }}
                         >
-                          <b>Auctioned time: </b>
+                          <b>
+                            Ended time: {formatDate(ex.auctionStatus?.endTime)}
+                          </b>
                         </ListGroup.Item>
                       </ListGroup>
                     </Card.Body>

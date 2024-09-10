@@ -277,7 +277,6 @@ export default function Product({ userID }) {
                               variant="outline-success"
                               onClick={() => {
                                 openModal3(item);
-                                console.log("open modal3");
                               }}
                             >
                               Create auction

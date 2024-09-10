@@ -37,7 +37,6 @@ const CountdownTimer = ({ startTime, endTime }) => {
     }
     // Determine if we are before the start time or after it.
   });
-  console.log(endTime);
 
   useEffect(() => {
     if (!startTime || !endTime) return;

@@ -19,13 +19,6 @@ const auctionDetailsSchema = new mongoose.Schema({
       ref: "User",
     },
   },
-  finalizedPrice: {
-    value: Number,
-    buyerID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  },
   intermediateFee: {
     type: Number,
   },

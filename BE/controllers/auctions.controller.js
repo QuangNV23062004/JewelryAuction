@@ -48,8 +48,7 @@ const UpdateAllAuctions = async (req = {}, res) => {
     const updatedAuctions = await Promise.all(
       auctions.map(async (auction) => {
         let newStatus = null;
-
-        // Fetch the highest bid related to the auction
+        let highestBid = null; // Initialize highestBid to null
 
         // Update status from "Scheduled" to "Ongoing"
         if (
@@ -65,7 +64,7 @@ const UpdateAllAuctions = async (req = {}, res) => {
         // Update status from "Ongoing" to "Completed" or "Unbidded"
         if (auction.status === "Ongoing" && currentTime >= auction.endTime) {
           const bids = await getAllBidWithAuctionId(auction._id);
-          const highestBid = bids.length > 0 ? bids[0] : null;
+          highestBid = bids.length > 0 ? bids[0] : null;
           if (highestBid) {
             newStatus = "Completed";
             console.log(`Ending auction ${auction._id} at ${currentTime}`);
@@ -84,6 +83,7 @@ const UpdateAllAuctions = async (req = {}, res) => {
 
           // Prepare update data based on the new status
           if (newStatus === "Completed" && highestBid) {
+            // Now, highestBid is defined
             updateData = {
               status: newStatus,
               winnerBid: highestBid.bidAmount,
@@ -106,24 +106,16 @@ const UpdateAllAuctions = async (req = {}, res) => {
       })
     );
 
-    // Filter out any null values (if any update fails)
-    const nonNullAuctions = updatedAuctions.filter((a) => a !== null);
+    // Further logic (if any) can be added here
 
-    if (!hasUpdates) {
-      console.log("Nothing to update");
-      if (res) {
-        return res.status(200).json({ message: "Nothing to update" });
-      }
-    }
-
-    if (res) {
-      res.status(200).json(nonNullAuctions); // Return updated auctions
+    if (res && hasUpdates) {
+      return res
+        .status(200)
+        .json({ message: "Auctions updated successfully.", updatedAuctions });
     }
   } catch (error) {
     console.error("Error occurred during auction status update:", error);
-    if (res) {
-      res.status(500).json({ message: error.message });
-    }
+    if (res) return res.status(500).json({ message: "Internal server error." });
   }
 };
 

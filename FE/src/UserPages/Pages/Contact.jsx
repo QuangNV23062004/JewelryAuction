@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,10 +12,26 @@ import {
   faEnvelope,
   faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
-
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function Contact() {
+  const [hovered, setHovered] = useState(false);
+  const notify = () => {
+    toast.success("Your message has been sent", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+  };
   return (
     <Container style={{ padding: "50px 0px", fontFamily: "'Georgia', serif" }}>
+      <ToastContainer />
       <Row>
         <Col md={6}>
           <img
@@ -84,7 +100,23 @@ export default function Contact() {
                   <Form.Label>Message</Form.Label>
                   <Form.Control as="textarea" rows={3} />
                 </Form.Group>
-                <Button variant="outline-primary">Send</Button>
+                <Button
+                  style={{
+                    borderColor: "orange",
+                    color: hovered ? "white" : "orange",
+                    backgroundColor: hovered ? "orange" : "transparent",
+                    marginTop: 20, // Ensure the background is transparent
+                  }}
+                  onMouseEnter={() => {
+                    setHovered(true);
+                  }}
+                  onMouseLeave={() => {
+                    setHovered(false);
+                  }}
+                  onClick={() => notify()}
+                >
+                  Send
+                </Button>
               </Form>
             </Col>
             <Col md={6}>

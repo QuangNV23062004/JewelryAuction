@@ -77,10 +77,19 @@ export default function About() {
                 <h2>Our Mission</h2>
                 <p>
                   At{" "}
-                  <span
-                    style={{ fontSize: 18, fontWeight: 600, color: "blue" }}
-                  >
-                    The Jewelry House
+                  <span>
+                    <Link
+                      to="/"
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 600,
+                        color: "#6CB4EE",
+                        cursor: "pointer",
+                        textDecoration: "none",
+                      }}
+                    >
+                      The Jewelry House
+                    </Link>
                   </span>
                   , we are committed to revolutionizing online jewelry auctions.
                   Our mission is to create a seamless, transparent, and
@@ -89,8 +98,20 @@ export default function About() {
                   provide an experience where users can confidently participate,
                   knowing their bids are secure and processed accurately.
                   Whether you're purchasing a beautiful piece or selling a
-                  cherished item, <span>The Jewelry House</span> handles every
-                  auction with professionalism and care.
+                  cherished item,{" "}
+                  <Link
+                    to="/"
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 600,
+                      color: "#6CB4EE",
+                      cursor: "pointer",
+                      textDecoration: "none",
+                    }}
+                  >
+                    The Jewelry House
+                  </Link>{" "}
+                  handles every auction with professionalism and care.
                 </p>
               </section>
             </Col>
@@ -143,9 +164,21 @@ export default function About() {
                   vibrant, global community. We believe in making luxurious and
                   unique pieces of jewelry accessible to all, while fostering
                   trust and fairness in every transaction. At{" "}
-                  <span>The Jewelry House</span>, we are committed to providing
-                  a platform that celebrates the beauty and value of jewelry,
-                  while offering a seamless experience for everyone involved.
+                  <Link
+                    to="/"
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 600,
+                      color: "#6CB4EE",
+                      cursor: "pointer",
+                      textDecoration: "none",
+                    }}
+                  >
+                    The Jewelry House
+                  </Link>
+                  , we are committed to providing a platform that celebrates the
+                  beauty and value of jewelry, while offering a seamless
+                  experience for everyone involved.
                 </p>
               </section>
             </Col>
@@ -186,30 +219,42 @@ export default function About() {
                 }}
               >
                 <h2>Our Values</h2>
-                <ul>
+                <ul style={{ listStyle: "none" }}>
                   <li>
-                    <FontAwesomeIcon icon={faGem} />
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      style={{ fontSize: 13, marginRight: 5, color: "#6CB4EE" }}
+                    />
                     <span>
                       Integrity: We maintain the highest standards of integrity
                       in our auction processes.
                     </span>
                   </li>
                   <li>
-                    <FontAwesomeIcon icon={faGem} />
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      style={{ fontSize: 13, marginRight: 5, color: "#6CB4EE" }}
+                    />
                     <span>
                       Customer Focus: Our customers are at the heart of
                       everything we do.
                     </span>
                   </li>
                   <li>
-                    <FontAwesomeIcon icon={faGem} />
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      style={{ fontSize: 13, marginRight: 5, color: "#6CB4EE" }}
+                    />
                     <span>
                       Innovation: We embrace technology to enhance our auction
                       platform.
                     </span>
                   </li>
                   <li>
-                    <FontAwesomeIcon icon={faGem} />
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      style={{ fontSize: 13, marginRight: 5, color: "#6CB4EE" }}
+                    />
                     <span>
                       Community: We are committed to building a vibrant
                       community of jewelry enthusiasts.
@@ -257,7 +302,10 @@ export default function About() {
                 <h2>Our Services</h2>
                 <ul style={{ listStyle: "none" }}>
                   <li>
-                    <FontAwesomeIcon icon={faGem} />
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      style={{ fontSize: 13, marginRight: 5, color: "#6CB4EE" }}
+                    />
                     <span>
                       Auction Management: We manage the entire auction process
                       from start to finish.
@@ -265,21 +313,30 @@ export default function About() {
                   </li>
 
                   <li>
-                    <FontAwesomeIcon icon={faGem} />
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      style={{ fontSize: 13, marginRight: 5, color: "#6CB4EE" }}
+                    />
                     <span>
                       Valuation Services: Our experienced staff provides
                       professional valuations for jewelry.
                     </span>
                   </li>
                   <li>
-                    <FontAwesomeIcon icon={faGem} />
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      style={{ fontSize: 13, marginRight: 5, color: "#6CB4EE" }}
+                    />
                     <span>
                       User-Friendly Platform: Our website is designed to be easy
                       to navigate.
                     </span>
                   </li>
                   <li>
-                    <FontAwesomeIcon icon={faGem} />
+                    <FontAwesomeIcon
+                      icon={faGem}
+                      style={{ fontSize: 13, marginRight: 5, color: "#6CB4EE" }}
+                    />
                     <span>
                       Customer Support: Our dedicated support team is available
                       to assist users.
