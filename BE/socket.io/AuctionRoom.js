@@ -16,42 +16,32 @@ module.exports = function (io) {
     socket.on("placeBid", async (data) => {
       const { roomId, bid } = data;
 
-      const session = await Auction.startSession(); // Start a Mongoose session for transactions
-      session.startTransaction(); // Start transaction
-
       try {
-        const auction = await Auction.findById(roomId).session(session); // Fetch auction in session
+        const auction = await Auction.findById(roomId);
 
         if (!auction) {
-          await session.abortTransaction(); // Abort if auction not found
+          console.log("no auctionID");
           return socket.emit("error", "Auction not found");
         }
 
-        // Validate bid amount
-        if (bid.bidAmount <= 0) {
-          return socket.emit("error", "Bid amount must be positive.");
-        }
-
-        // Check if the new bid is higher than the current bid
         if (!auction.currentBid || bid.bidAmount > auction.currentBid) {
+          console.log("case 1: more than currentBid");
           if (auction.currentBid) {
-            await updateAllBidToOutbid(auction._id, { session }); // Mark all previous bids as "Outbid"
+            await updateAllBidToOutbid(auction._id);
           }
 
-          auction.currentBid = bid.bidAmount; // Update auction with new highest bid
-          await auction.save({ session });
+          auction.currentBid = bid.bidAmount;
+          await auction.save();
 
-          bid.status = "Winning"; // Set the new bid as "Winning"
+          bid.status = "Winning";
         } else {
-          bid.status = "Outbid"; // Mark the new bid as "Outbid" if it's lower than current bid
+          console.log("case 2: lower");
+          bid.status = "Outbid";
         }
 
-        const newBid = await createBid2(bid, { session }); // Save the new bid
+        const newBid = await createBid2(bid);
 
-        await session.commitTransaction(); // Commit the transaction
-
-        // Notify all clients in the room about the new bid
-        io.in(roomId).emit("newBid", {
+        socket.to(roomId).emit("newBid", {
           amount: newBid.bidAmount,
           user: newBid.userID,
           status: newBid.status,
@@ -59,11 +49,8 @@ module.exports = function (io) {
 
         console.log(`New bid in room ${roomId}: ${newBid.bidAmount}`);
       } catch (error) {
-        await session.abortTransaction(); // Abort the transaction on error
         console.error("Error processing bid:", error);
         socket.emit("error", error.message);
-      } finally {
-        session.endSession(); // End the session
       }
     });
 

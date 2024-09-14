@@ -8,6 +8,16 @@ const createPayment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const createNewPayment = async (payment) => {
+  try {
+    const paymentResponse = await Payment.create(payment);
+    if (!paymentResponse) {
+      console.log("fail to create payment: " + payment);
+    }
+  } catch (error) {
+    console.log("error creating payment: " + error);
+  }
+};
 const getAllPayments = async (req, res) => {
   try {
     const payment = await Payment.find();
@@ -40,7 +50,33 @@ const updatePayment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+const getPaymentByAuctionID = async (auctionId) => {
+  try {
+    const payment = await Payment.find({ auctionId: auctionId });
+    if (!payment) {
+      console.log("No payment found");
+    }
+    return payment;
+  } catch (error) {
+    console.log("Error getting payment for auction: " + auctionId);
+  }
+};
+const UpdatePaymentByAuctionID = async (auctionId, payment) => {
+  try {
+    const paymentResponse = await Payment.find(
+      { auctionID: auctionId },
+      payment,
+      {
+        new: true,
+      }
+    );
+    if (!paymentResponse) {
+      console.log("fail to update payment: " + payment);
+    }
+  } catch (error) {
+    console.log("error updating payment: " + error);
+  }
+};
 const deletePayment = async (req, res) => {
   try {
     const payment = await Payment.findByIdAndDelete(req.params.id);
@@ -59,4 +95,5 @@ module.exports = {
   getPayment,
   updatePayment,
   deletePayment,
+  createNewPayment,
 };

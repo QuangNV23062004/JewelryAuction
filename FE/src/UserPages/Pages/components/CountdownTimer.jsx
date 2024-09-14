@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from "react";
 
-const CountdownTimer = ({ startTime, endTime }) => {
+const CountdownTimer = ({ startTime, endTime, user, winner }) => {
   const calculateTimeLeft = (targetDate) => {
     if (!targetDate) return {};
 
     const difference = +new Date(targetDate) - +new Date();
-    // Calculate the time difference between now and the targetDate.
     let timeLeft = {};
 
     if (difference > 0) {
-      // If the difference is positive (targetDate is in the future), calculate time left.
       timeLeft = {
-        months: Math.floor(difference / (1000 * 60 * 60 * 24 * 30)),
-        // Calculate remaining months.
-        days: Math.floor((difference / (1000 * 60 * 60 * 24)) % 30),
-        // Calculate remaining days
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        // Calculate remaining hours
         minutes: Math.floor((difference / 1000 / 60) % 60),
-        // Calculate remaining minutes
         seconds: Math.floor((difference / 1000) % 60),
-        // Calculate remaining seconds.
       };
     }
 
@@ -35,7 +27,6 @@ const CountdownTimer = ({ startTime, endTime }) => {
     } else {
       return calculateTimeLeft(endTime);
     }
-    // Determine if we are before the start time or after it.
   });
 
   useEffect(() => {
@@ -53,43 +44,77 @@ const CountdownTimer = ({ startTime, endTime }) => {
   }, [startTime, endTime]);
 
   const renderTimerComponents = () => {
-    const difference = +new Date(endTime) - +new Date();
-    const isLessThanOneHour = difference <= 1000 * 60 * 60;
+    const { days, hours, minutes, seconds } = timeLeft;
 
-    if (isLessThanOneHour) {
+    // If more than 1 day left, show days and hours
+    if (days > 0) {
       return (
         <span>
-          {timeLeft.minutes} minutes {timeLeft.seconds} seconds
+          {days} days {hours} hours
         </span>
       );
-    } else if (timeLeft.days > 0) {
-      return (
-        <span>
-          {timeLeft.days} days {timeLeft.hours} hours
-        </span>
-      );
-    } else if (timeLeft.hours > 0) {
-      return <span>{timeLeft.hours} hours</span>;
-    } else if (timeLeft.months > 0) {
-      return <span>{timeLeft.months} months</span>;
     }
-
-    return null;
+    // If less than 1 day but more than 1 hour, show only hours
+    else if (hours > 0) {
+      return <span>{hours} hours</span>;
+    }
+    // If less than 1 hour, show minutes and seconds
+    else {
+      return (
+        <span>
+          {minutes} minutes {seconds} seconds
+        </span>
+      );
+    }
   };
+
+  const renderCheckoutTimerComponents = () => {
+    const checkoutEndTime = new Date(endTime);
+    checkoutEndTime.setTime(
+      checkoutEndTime.getTime() + 1000 * 60 * 60 * 24 * 7
+    ); // Add 7 days
+    const timeLeftForCheckout = calculateTimeLeft(checkoutEndTime);
+    const { days, hours, minutes, seconds } = timeLeftForCheckout;
+
+    // If more than 1 day left, show days and hours
+    if (days > 0) {
+      return (
+        <span>
+          {days} days {hours} hours
+        </span>
+      );
+    }
+    // If less than 1 day but more than 1 hour, show only hours
+    else if (hours > 0) {
+      return <span>{hours} hours</span>;
+    }
+    // If less than 1 hour, show minutes and seconds
+    else {
+      return (
+        <span>
+          {minutes} minutes {seconds} seconds
+        </span>
+      );
+    }
+  };
+
+  const currentTime = new Date();
+  const auctionEnded = currentTime >= new Date(endTime);
+  const isWinner = user && winner && user === winner; // Safely check if both user and winner exist
 
   if (!startTime || !endTime) {
     return <span>Coming soon</span>;
   }
 
-  if (new Date() < new Date(startTime)) {
+  if (currentTime < new Date(startTime)) {
     return (
       <span>
         Starting in: {renderTimerComponents() || <span>Coming soon</span>}
       </span>
     );
   } else if (
-    new Date() >= new Date(startTime) &&
-    new Date() < new Date(endTime)
+    currentTime >= new Date(startTime) &&
+    currentTime < new Date(endTime)
   ) {
     return (
       <span>
@@ -98,7 +123,18 @@ const CountdownTimer = ({ startTime, endTime }) => {
       </span>
     );
   } else {
-    return <span>Auction has ended</span>;
+    return (
+      <>
+        <span>Auction has ended</span>
+        <br />
+        {isWinner && (
+          <span>
+            You have {renderCheckoutTimerComponents()} to checkout, or your bid
+            will be invalid.
+          </span>
+        )}
+      </>
+    );
   }
 };
 

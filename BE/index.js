@@ -15,6 +15,7 @@ const bidRoutes = require("./routes/bids.route");
 const auctionRoute = require("./routes/auctions.route");
 const paymentRoute = require("./routes/payments.route");
 const userRoutes = require("./routes/users.route");
+const vnpayRoutes = require("./routes/vnpay.route");
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
@@ -32,7 +33,7 @@ app.use("/jewelry", jewelryRoutes);
 app.use("/bid", bidRoutes);
 app.use("/auction", auctionRoute);
 app.use("/payment", paymentRoute);
-
+app.use("/vnpay", vnpayRoutes);
 app.get("/", (req, res) => {
   res.send("Hello from NODE API: Server Updated");
 });

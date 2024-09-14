@@ -46,9 +46,11 @@ export default function InitialModal() {
                 Category: {selectedJewelry.category}
                 <br />
                 <CountdownTimer
-                  startTime={auction.startTime}
-                  endTime={auction.endTime}
-                ></CountdownTimer>{" "}
+                  user={user?._id || null}
+                  startTime={au.auctionStatus.startTime}
+                  endTime={au.auctionStatus.endTime}
+                  winner={au.auctionStatus?.winner || null}
+                />{" "}
                 <br />
                 Current Initial Bid: ${auction.currentBid || 0}
               </Card.Text>

@@ -2,6 +2,7 @@ const Auction = require("../models/auction.model");
 
 const { getAllBidWithAuctionId } = require("./bids.controller");
 const { updateJewelry2 } = require("./jewelries.controller");
+const { createNewPayment } = require("./payment.controller");
 const createAuction = async (req, res) => {
   try {
     const auction = await Auction.create(req.body);
@@ -69,6 +70,17 @@ const UpdateAllAuctions = async (req = {}, res) => {
             newStatus = "Completed";
             console.log(`Ending auction ${auction._id} at ${currentTime}`);
             await updateJewelry2(auction.jewelryID, "Sold");
+            await createNewPayment({
+              payerID: highestBid.userID, // Use highestBid's userID
+              paymentMethod: "Unprocessed",
+              auctionID: auction._id,
+              amount: highestBid.bidAmount, // Use highestBid's amount
+              status: "Pending",
+              dueDate: new Date(
+                new Date(auction.endTime).getTime() + 1000 * 60 * 60 * 24 * 7
+              ), // 7 days after auction ends
+              type: "Payment",
+            });
           } else {
             newStatus = "Unbidded";
             console.log(

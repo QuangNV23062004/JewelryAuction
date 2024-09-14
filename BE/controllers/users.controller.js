@@ -1,5 +1,26 @@
 const User = require("../models/user.model");
+const updateUserBalance = async (accountId, newBalance) => {
+  try {
+    // Ensure newBalance is a valid positive number
+    if (newBalance < 0) {
+      throw new Error("Balance cannot be negative");
+    }
 
+    const user = await User.findByIdAndUpdate(
+      accountId,
+      { $set: { balance: newBalance } },
+      { new: true }
+    );
+
+    if (!user) {
+      console.log("No user found or updated");
+    } else {
+      console.log("User balance updated successfully", user);
+    }
+  } catch (error) {
+    console.log("Error updating balance: " + accountId + ", " + error.message);
+  }
+};
 const createUser = async (req, res) => {
   try {
     const user = await User.create(req.body);
@@ -17,7 +38,17 @@ const getAllUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+const getAdmin = async () => {
+  try {
+    const admin = await User.findOne({ role: 4 });
+    if (!admin) {
+      console.log("Admin not found");
+    }
+    return admin;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 const getUser = async (req, res) => {
   try {
     const id = req.params.id;
@@ -77,4 +108,6 @@ module.exports = {
   updateUser,
   createUser,
   login,
+  updateUserBalance,
+  getAdmin,
 };

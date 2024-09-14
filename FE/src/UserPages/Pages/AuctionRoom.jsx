@@ -16,6 +16,7 @@ const AuctionRoom = () => {
   const [allBid, setAllBid] = useState([]);
   const { user } = useContext(UserContext);
 
+  // Maintain socket connection across component lifecycle
   useEffect(() => {
     const socket = io("http://localhost:5000");
 
@@ -32,13 +33,19 @@ const AuctionRoom = () => {
       setAllBid((prevBids) => [...(prevBids || []), bid]); // Add new bid to allBid array
     });
 
-    // Cleanup
+    // Listen for errors
+    socket.on("error", (errorMessage) => {
+      alert(`Error: ${errorMessage}`);
+    });
+
+    // Cleanup on component unmount
     return () => {
       socket.emit("leaveAuctionRoom", roomId);
       socket.disconnect();
     };
   }, [roomId]);
 
+  // Fetch auction data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,13 +65,16 @@ const AuctionRoom = () => {
   }, [roomId]);
 
   const handlePlaceBid = () => {
-    const socket = io("http://localhost:5000");
-    console.log("handlePlaceBid");
     if (!currentAu || !user) {
+      alert("User or auction information is missing.");
       return;
     }
-    if (user) console.log("User: " + user || null);
-    if (currentAu) console.log("currentAu: " + currentAu || null);
+
+    if (bidAmount <= 0) {
+      alert("Bid amount must be greater than 0.");
+      return;
+    }
+
     const bid = {
       auctionID: currentAu.auctionStatus?._id,
       userID: user._id,
@@ -72,9 +82,23 @@ const AuctionRoom = () => {
       bidTime: new Date(),
     };
 
+    const socket = io("http://localhost:5000");
+
+    // Emit the bid event through the socket
     socket.emit("placeBid", { roomId, bid });
 
-    setBidAmount(0); // Reset the bid amount
+    // Reset bid amount after placing bid
+    setBidAmount(0);
+
+    // Listen for response to avoid multiple socket instances
+    socket.on("bidSuccess", (newBid) => {
+      setCurrentBid(newBid); // Update current bid on success
+      setAllBid((prevBids) => [...(prevBids || []), newBid]); // Update all bids list
+    });
+
+    socket.on("error", (errorMessage) => {
+      alert(`Error: ${errorMessage}`);
+    });
   };
 
   return (
@@ -108,8 +132,10 @@ const AuctionRoom = () => {
                           Type: {currentAu.category}
                           <br />
                           <CountdownTimer
-                            startTime={currentAu.auctionStatus?.startTime}
-                            endTime={currentAu.auctionStatus?.endTime}
+                            user={user?._id || null}
+                            startTime={currentAu.startTime}
+                            endTime={currentAu.endTime}
+                            winner={currentAu.auctionStatus?.winner || null}
                           />
                           <br />
                           Current Bid: $

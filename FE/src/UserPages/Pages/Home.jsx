@@ -57,6 +57,7 @@ export default function Home() {
   const [feedback, setFeedback] = useState([]);
   const [auctions, setAuctions] = useState([]);
   const nav = useNavigate();
+  const user = JSON.parse(sessionStorage.getItem("user"));
   const link = {
     Ring: "https://i5.walmartimages.com/asr/c7fab786-8103-4f9f-91b3-b9c37af9ae6f.bd6c1972b42a459b7794e8faf5236bf3.jpeg?odnWidth=1000&odnHeight=1000&odnBg=ffffff",
     Brooch:
@@ -271,8 +272,10 @@ export default function Home() {
                       <ListGroup.Item>
                         <b>Countdown:</b>
                         <CountdownTimer
-                          startTime={jew.startTime}
-                          endTime={jew.endTime}
+                          user={user?._id || null}
+                          startTime={jew.auctionStatus.startTime}
+                          endTime={jew.auctionStatus.endTime}
+                          winner={jew.auctionStatus?.winner || null}
                         />
                       </ListGroup.Item>
                     </ListGroup>

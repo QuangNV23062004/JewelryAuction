@@ -8,7 +8,7 @@ const paymentSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ["Credit Card", "PayPal", "Bank Transfer"],
+    enum: ["Unprocessed", "VNPAY", "Cash On Delivery"],
     required: true,
   },
   auctionID: {
@@ -27,11 +27,20 @@ const paymentSchema = new mongoose.Schema({
   },
   jewelryStatus: {
     type: String,
-    enum: ["Packaging", "Delivery", "Delivered"],
+    enum: ["Pending", "Packaging", "Delivery", "Delivered"],
     required: false,
   },
   paytime: {
     type: Date,
+    required: false,
+  },
+  dueDate: {
+    type: Date,
+    required: true,
+  },
+  type: {
+    type: String,
+    enum: ["Payment", "Payout"],
     required: true,
   },
 });

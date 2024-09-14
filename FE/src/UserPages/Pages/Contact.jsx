@@ -14,8 +14,81 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 export default function Contact() {
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const message = formData.get("message");
+
+    // Simple validation to check if all fields are filled
+    if (!name || !email || !message) {
+      toast.error("Please fill out all fields", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      return; // Prevent form submission if validation fails
+    }
+
+    formData.append("access_key", "d9fc1c16-6444-411d-8bad-2bfbff3147e7");
+
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: json,
+      }).then((res) => res.json());
+
+      if (res.success) {
+        console.log("Success", res);
+        notify();
+        event.target.reset();
+      } else {
+        toast.error("Submission failed: " + res.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+      }
+    } catch (error) {
+      toast.error("An error occurred: " + error.message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+    }
+  };
+
   const [hovered, setHovered] = useState(false);
+
   const notify = () => {
     toast.success("Your message has been sent", {
       position: "top-right",
@@ -29,6 +102,7 @@ export default function Contact() {
       transition: Bounce,
     });
   };
+
   return (
     <Container style={{ padding: "50px 0px", fontFamily: "'Georgia', serif" }}>
       <ToastContainer />
@@ -83,24 +157,25 @@ export default function Contact() {
                   />
                 </span>
               </h3>
-              <Form>
+              <Form onSubmit={onSubmit}>
                 <Form.Group
                   className="mb-3"
                   controlId="exampleForm.ControlInput1"
                 >
                   <Form.Label>Full Name</Form.Label>
-                  <Form.Control type="text" placeholder="" />
+                  <Form.Control type="text" placeholder="" name="name" />
                   <Form.Label>Email</Form.Label>
-                  <Form.Control type="email" placeholder="" />
+                  <Form.Control type="email" placeholder="" name="email" />
                 </Form.Group>
                 <Form.Group
                   className="mb-3"
                   controlId="exampleForm.ControlTextarea1"
                 >
                   <Form.Label>Message</Form.Label>
-                  <Form.Control as="textarea" rows={3} />
+                  <Form.Control as="textarea" rows={3} name="message" />
                 </Form.Group>
                 <Button
+                  type="submit"
                   style={{
                     borderColor: "orange",
                     color: hovered ? "white" : "orange",
@@ -113,7 +188,6 @@ export default function Contact() {
                   onMouseLeave={() => {
                     setHovered(false);
                   }}
-                  onClick={() => notify()}
                 >
                   Send
                 </Button>
@@ -142,7 +216,6 @@ export default function Contact() {
               <div style={{ margin: "20px 10px" }}>
                 <span style={{ fontWeight: 600, fontSize: 25 }}>Email</span>
                 <br />
-                {/* Inline-flex to keep icon and text on the same line */}
                 <span style={{ display: "inline-flex", alignItems: "center" }}>
                   <FontAwesomeIcon
                     icon={faEnvelope}

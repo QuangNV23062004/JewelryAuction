@@ -24,6 +24,27 @@ export default function Auction() {
   } = useJewelry();
   const nav = useNavigate();
   const loc = useLocation();
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const handleCheckout = async (auctionId, amount) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/vnpay/create_payment_url",
+        {
+          auctionId: auctionId, // Send the auction ID for payment processing
+          amount: amount, // Amount to be paid (winner bid)
+          bankCode: "", // Optionally add a bank code if needed
+        }
+      );
+      const { url } = response.data;
+
+      // Redirect the user to VNPay payment URL
+      window.location.href = url;
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      toast.error("Failed to initiate payment. Please try again.");
+    }
+  };
+
   const fetchData = async () => {
     try {
       const auctionsResponse = await axios.get(
@@ -147,8 +168,10 @@ export default function Auction() {
                             Type: {au.category}
                             <br />
                             <CountdownTimer
+                              user={user?._id || null}
                               startTime={au.auctionStatus.startTime}
                               endTime={au.auctionStatus.endTime}
+                              winner={au.auctionStatus?.winner || null}
                             />
                             <br />
                             {au.auctionStatus.status === "Scheduled" &&
@@ -182,7 +205,6 @@ export default function Auction() {
                                 <Button
                                   variant="outline-success"
                                   onClick={() => {
-                                    const user = sessionStorage.getItem("user");
                                     if (user) {
                                       nav(`/auction/${au.auctionStatus._id}`);
                                     } else {
@@ -220,6 +242,22 @@ export default function Auction() {
                               </>
                             ) : (
                               <></>
+                            )}
+                            {user && au.auctionStatus?.winner === user._id && (
+                              <>
+                                <br />
+                                <Button
+                                  variant="outline-info"
+                                  onClick={() =>
+                                    handleCheckout(
+                                      au.auctionStatus._id,
+                                      au.auctionStatus.winnerBid
+                                    )
+                                  }
+                                >
+                                  Checkout
+                                </Button>
+                              </>
                             )}
                           </div>
                         </div>
@@ -268,8 +306,10 @@ export default function Auction() {
                             <Col md={8}>
                               {" "}
                               <CountdownTimer
+                                user={user?._id || null}
                                 startTime={au.auctionStatus.startTime}
                                 endTime={au.auctionStatus.endTime}
+                                winner={au.auctionStatus?.winner || null}
                               />
                             </Col>
                             <Col md={4}>
