@@ -1,9 +1,10 @@
 const User = require("../models/user.model");
+
 const updateUserBalance = async (accountId, newBalance) => {
   try {
     // Ensure newBalance is a valid positive number
     if (newBalance < 0) {
-      throw new Error("Balance cannot be negative");
+      return { success: false, message: "Balance cannot be negative" };
     }
 
     const user = await User.findByIdAndUpdate(
@@ -14,11 +15,17 @@ const updateUserBalance = async (accountId, newBalance) => {
 
     if (!user) {
       console.log("No user found or updated");
+      return { success: false, message: "User not found" };
     } else {
       console.log("User balance updated successfully", user);
+      return { success: true, message: "Balance updated successfully", user };
     }
   } catch (error) {
     console.log("Error updating balance: " + accountId + ", " + error.message);
+    return {
+      success: false,
+      message: "Error updating balance: " + error.message,
+    };
   }
 };
 const createUser = async (req, res) => {

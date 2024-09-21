@@ -52,31 +52,52 @@ const updatePayment = async (req, res) => {
 };
 const getPaymentByAuctionID = async (auctionId) => {
   try {
-    const payment = await Payment.find({ auctionId: auctionId });
+    const payment = await Payment.findOne({ auctionID: auctionId }); // Use findOne for a single result
     if (!payment) {
-      console.log("No payment found");
+      console.log("No payment found for auction ID: " + auctionId);
     }
     return payment;
   } catch (error) {
-    console.log("Error getting payment for auction: " + auctionId);
-  }
-};
-const UpdatePaymentByAuctionID = async (auctionId, payment) => {
-  try {
-    const paymentResponse = await Payment.find(
-      { auctionID: auctionId },
-      payment,
-      {
-        new: true,
-      }
+    console.log(
+      "Error fetching payment for auction: " + auctionId + " - " + error
     );
-    if (!paymentResponse) {
-      console.log("fail to update payment: " + payment);
-    }
-  } catch (error) {
-    console.log("error updating payment: " + error);
   }
 };
+
+const UpdatePaymentByAuctionID = async (auctionId, paymentData) => {
+  try {
+    // Ensure that auctionId and paymentData are valid
+    if (!auctionId || !paymentData) {
+      throw new Error("Invalid auctionId or payment data.");
+    }
+
+    // Find the payment by auctionId and update it with the new payment data
+    const updatedPayment = await Payment.findOneAndUpdate(
+      { auctionID: auctionId }, // Find the payment with the matching auctionID
+      { $set: paymentData }, // Use $set to update the fields without replacing the whole document
+      { new: true, runValidators: true } // Return the updated document and validate the input
+    );
+
+    // If no payment was found, log a message and return null
+    if (!updatedPayment) {
+      console.log("Payment not found for auction ID: " + auctionId);
+      return null;
+    }
+
+    // Log the success and return the updated payment
+    console.log("Payment updated successfully for auction ID: " + auctionId);
+    console.log(updatedPayment);
+    return updatedPayment;
+  } catch (error) {
+    console.log("Error updating payment for auction ID: " + auctionId, error);
+    return null;
+  }
+};
+
+module.exports = {
+  UpdatePaymentByAuctionID,
+};
+
 const deletePayment = async (req, res) => {
   try {
     const payment = await Payment.findByIdAndDelete(req.params.id);
@@ -96,4 +117,6 @@ module.exports = {
   updatePayment,
   deletePayment,
   createNewPayment,
+  getPaymentByAuctionID,
+  UpdatePaymentByAuctionID,
 };

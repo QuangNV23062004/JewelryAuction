@@ -16,5 +16,5 @@ module.exports = {
   vnp_HashSecret: process.env.VNP_HASHSECRET,
   vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
   vnp_Api: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction",
-  vnp_ReturnUrl: "http://localhost:5000/payment/vnpay_return",
+  vnp_ReturnUrl: "http://localhost:5000/vnpay/vnpay_return",
 };

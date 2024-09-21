@@ -135,14 +135,18 @@ export default function Process() {
         </Nav.Item>
       </Nav>
 
-      <Carousel>
+      <Carousel style={{ width: "100%", backgroundColor: "rgba(0,0,0,0.8)" }}>
         {getSteps().map((step, index) => (
           <Carousel.Item key={index}>
             <img
-              className="d-block w-100"
+              className="d-block "
               src={step.image}
               alt={`Slide ${index + 1}`}
-              style={{ height: "850px", width: "100%" }}
+              style={{
+                height: "550px",
+                width: "80%",
+                margin: "10px 10%",
+              }}
             />
             <Carousel.Caption
               style={{

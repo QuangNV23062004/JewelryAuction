@@ -25,31 +25,16 @@ export default function Auction() {
   const nav = useNavigate();
   const loc = useLocation();
   const user = JSON.parse(sessionStorage.getItem("user"));
-  const handleCheckout = async (auctionId, amount) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/vnpay/create_payment_url",
-        {
-          auctionId: auctionId, // Send the auction ID for payment processing
-          amount: amount, // Amount to be paid (winner bid)
-          bankCode: "", // Optionally add a bank code if needed
-        }
-      );
-      const { url } = response.data;
 
-      // Redirect the user to VNPay payment URL
-      window.location.href = url;
-    } catch (error) {
-      console.error("Error during checkout:", error);
-      toast.error("Failed to initiate payment. Please try again.");
-    }
+  const handleCheckoutNav = (jewId) => {
+    nav(`/checkout/${jewId}`);
   };
-
   const fetchData = async () => {
     try {
       const auctionsResponse = await axios.get(
         "http://localhost:5000/jewelry/with-auction"
       );
+      // console.log(auctionsResponse.data);
       if (!cat) {
         setAuctions(
           auctionsResponse.data.sort((a, b) => new Date(a) - new Date(b))
@@ -172,7 +157,15 @@ export default function Auction() {
                               startTime={au.auctionStatus.startTime}
                               endTime={au.auctionStatus.endTime}
                               winner={au.auctionStatus?.winner || null}
+                              status={au.paymentDetails.status}
                             />
+                            {au.paymentDetails.status == "Completed" &&
+                              user &&
+                              user._id == au.auctionStatus.winner && (
+                                <Button variant="success">
+                                  Payment Completed
+                                </Button>
+                              )}
                             <br />
                             {au.auctionStatus.status === "Scheduled" &&
                             new Date(au.auctionStatus.startTime) - new Date() <=
@@ -243,22 +236,25 @@ export default function Auction() {
                             ) : (
                               <></>
                             )}
-                            {user && au.auctionStatus?.winner === user._id && (
-                              <>
-                                <br />
-                                <Button
-                                  variant="outline-info"
-                                  onClick={() =>
-                                    handleCheckout(
-                                      au.auctionStatus._id,
-                                      au.auctionStatus.winnerBid
-                                    )
-                                  }
-                                >
-                                  Checkout
-                                </Button>
-                              </>
-                            )}
+                            {user &&
+                              au.auctionStatus?.winner === user._id &&
+                              au.paymentDetails.status === "Pending" && (
+                                <>
+                                  <br />
+                                  <Button
+                                    variant="outline-info"
+                                    onClick={() =>
+                                      // handleCheckout(
+                                      //   au.auctionStatus._id,
+                                      //   au.auctionStatus.winnerBid
+                                      // )
+                                      handleCheckoutNav(au._id)
+                                    }
+                                  >
+                                    Checkout
+                                  </Button>
+                                </>
+                              )}
                           </div>
                         </div>
                       </>
@@ -310,7 +306,15 @@ export default function Auction() {
                                 startTime={au.auctionStatus.startTime}
                                 endTime={au.auctionStatus.endTime}
                                 winner={au.auctionStatus?.winner || null}
+                                status={au.paymentDetails.status}
                               />
+                              {user &&
+                                au.paymentDetails.status == "Completed" &&
+                                user._id == au.auctionStatus.winner && (
+                                  <Button variant="success">
+                                    Payment Completed
+                                  </Button>
+                                )}
                             </Col>
                             <Col md={4}>
                               <Button

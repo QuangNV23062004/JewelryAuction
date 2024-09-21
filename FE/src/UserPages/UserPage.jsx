@@ -13,6 +13,10 @@ import MyJew from "./Pages/MyJew";
 import Detail from "./Pages/Detail";
 import AuctionRoom from "./Pages/AuctionRoom";
 import InitialModal from "./Pages/components/InitialModal";
+import Success from "./Pages/Success";
+import Fail from "./Pages/Fail";
+import NotFound from "./Pages/NotFound";
+import Checkout from "./Pages/Checkout";
 export default function UserPage() {
   return (
     <>
@@ -33,6 +37,11 @@ export default function UserPage() {
           <Route path="/auction/:roomId" element={<AuctionRoom />}></Route>
           <Route path="/procedure" element={<Process />}></Route>
           <Route path="/auction/category/:cat" element={<Auction />}></Route>
+          <Route path="/success" element={<Success />}></Route>
+          <Route path="/fail" element={<Fail />}></Route>
+          <Route path="/failProcess" element={<Fail />}></Route>
+          <Route path="/404" element={<NotFound />}></Route>
+          <Route path="/checkout/:jewId" element={<Checkout />}></Route>
         </Routes>
       </div>
       <Footer></Footer>

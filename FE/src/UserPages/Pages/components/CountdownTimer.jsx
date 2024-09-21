@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const CountdownTimer = ({ startTime, endTime, user, winner }) => {
+const CountdownTimer = ({ startTime, endTime, user, winner, status }) => {
   const calculateTimeLeft = (targetDate) => {
     if (!targetDate) return {};
 
@@ -127,7 +127,7 @@ const CountdownTimer = ({ startTime, endTime, user, winner }) => {
       <>
         <span>Auction has ended</span>
         <br />
-        {isWinner && (
+        {isWinner && status === "Pending" && (
           <span>
             You have {renderCheckoutTimerComponents()} to checkout, or your bid
             will be invalid.

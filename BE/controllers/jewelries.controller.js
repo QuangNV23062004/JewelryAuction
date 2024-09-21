@@ -1,5 +1,4 @@
 const Jewelry = require("../models/jewelry.model");
-const Auction = require("../models/auction.model");
 
 // Create Jewelry
 const createJewelry = async (req, res) => {
@@ -82,10 +81,9 @@ const deleteJewelry = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const getJewelryWithAuction = async (req, res) => {
   try {
-    const jewelryWithAuction = await Jewelry.aggregate([
+    const jewelryWithAuctionAndPayments = await Jewelry.aggregate([
       {
         $lookup: {
           from: "auctions", // The name of the auctions collection
@@ -96,6 +94,20 @@ const getJewelryWithAuction = async (req, res) => {
       },
       {
         $unwind: "$auctionStatus", // Unwind to flatten the auction data
+      },
+      {
+        $lookup: {
+          from: "payments", // The name of the payments collection
+          localField: "auctionStatus._id", // Auction ID in the auctionStatus field
+          foreignField: "auctionID", // Field from Payment collection
+          as: "paymentDetails", // Name of the output array field for payments
+        },
+      },
+      {
+        $unwind: {
+          path: "$paymentDetails", // Unwind paymentDetails to flatten it
+          preserveNullAndEmptyArrays: true, // Keep documents without matching payments
+        },
       },
       {
         $match: {
@@ -123,19 +135,31 @@ const getJewelryWithAuction = async (req, res) => {
           "auctionStatus.winner": 1,
           "auctionStatus.winnerBid": 1,
           "auctionStatus.currentBid": 1,
+          "paymentDetails._id": 1, // Payment details
+          "paymentDetails.amount": 1,
+          "paymentDetails.paymentMethod": 1,
+          "paymentDetails.status": 1,
+          "paymentDetails.paytime": 1,
+          "paymentDetails.dueDate": 1,
         },
       },
     ]);
 
-    if (!jewelryWithAuction || jewelryWithAuction.length === 0) {
+    if (
+      !jewelryWithAuctionAndPayments ||
+      jewelryWithAuctionAndPayments.length === 0
+    ) {
       return res
         .status(404)
-        .json({ message: "No jewelry with auction data found" });
+        .json({ message: "No jewelry with auction and payment data found" });
     }
 
-    res.status(200).json(jewelryWithAuction);
+    res.status(200).json(jewelryWithAuctionAndPayments);
   } catch (error) {
-    console.error("Error fetching jewelry with auction data:", error);
+    console.error(
+      "Error fetching jewelry with auction and payment data:",
+      error
+    );
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
