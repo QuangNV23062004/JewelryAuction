@@ -6,7 +6,7 @@ import Card from "react-bootstrap/Card";
 import ListGroup from "react-bootstrap/ListGroup";
 import Form from "react-bootstrap/Form";
 import CountdownTimer from "./components/CountdownTimer";
-
+import { toast } from "react-toastify";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { Col, Row } from "react-bootstrap";
 import Province from "../../Resources/Province";
@@ -19,8 +19,25 @@ export default function Checkout() {
   const user = JSON.parse(sessionStorage.getItem("user"));
   const [ShowPolicy, SetShowPolicy] = useState(false);
   const [deliveryEnabled, setDeliveryEnabled] = useState(true); // Track delivery switch state
+  const [note, setNote] = useState(""); // Store the note entered by the user
 
   const handleCheckout = async (auctionId, amount) => {
+    // Prepare address and user details for sending in the request
+    const deliveryAddress = deliveryEnabled
+      ? `${address.Province}, ${address.District}, ${address.Ward}, ${detail.address}`
+      : "N/A";
+
+    const userInfo = {
+      fullName: detail.fullName,
+      email: detail.email,
+      phone: detail.phone,
+      delivery: {
+        status: deliveryEnabled,
+        address: deliveryAddress,
+        note: note || "N/A",
+      },
+    };
+
     try {
       const response = await axios.post(
         "http://localhost:5000/vnpay/create_payment_url",
@@ -28,6 +45,7 @@ export default function Checkout() {
           auctionId: auctionId,
           amount: amount,
           bankCode: "",
+          userInfo: userInfo,
         }
       );
       const { url } = response.data;
@@ -141,6 +159,9 @@ export default function Checkout() {
           <Form>
             <Row style={{ margin: "40px 0px" }}>
               <Col md={6}>
+                <h3 style={{ color: "orange", fontWeight: 600 }}>
+                  User Information
+                </h3>
                 <Form.Group
                   className="mb-3"
                   controlId="exampleForm.ControlInput1"
@@ -270,20 +291,11 @@ export default function Checkout() {
                     </p>
                   )}
                 </Form.Group>
-
-                <Button
-                  variant="outline-success"
-                  onClick={() =>
-                    handleCheckout(
-                      jewelry.auctionStatus._id,
-                      jewelry.auctionStatus.winnerBid
-                    )
-                  }
-                >
-                  Proceed to checkout
-                </Button>
               </Col>
               <Col md={6}>
+                <h3 style={{ color: "orange", fontWeight: 600 }}>
+                  Delivery Information
+                </h3>
                 <Form.Group>
                   <FloatingLabel
                     controlId="floatingInput"
@@ -366,6 +378,9 @@ export default function Checkout() {
                       rows={1}
                       value={detail.address}
                       disabled={!deliveryEnabled} // Disable if delivery is disabled
+                      onChange={(e) => {
+                        setDetail({ ...detail, address: e.target.value });
+                      }}
                     />
                   </FloatingLabel>
                 </Form.Group>
@@ -381,6 +396,8 @@ export default function Checkout() {
                     <Form.Control
                       as="textarea"
                       rows={1}
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)} // Capture note value
                       disabled={!deliveryEnabled} // Disable if delivery is disabled
                     />
                     <p>
@@ -416,6 +433,28 @@ export default function Checkout() {
             </Card.Body>
           </Card>
         </Col>
+      </Row>
+      <Row>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "20px 10px",
+          }}
+        >
+          {" "}
+          <Button
+            variant="outline-success"
+            onClick={() =>
+              handleCheckout(
+                jewelry.auctionStatus._id,
+                jewelry.auctionStatus.winnerBid
+              )
+            }
+          >
+            Proceed to checkout
+          </Button>
+        </div>
       </Row>
     </div>
   );

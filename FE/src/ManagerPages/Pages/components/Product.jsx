@@ -23,6 +23,7 @@ export default function Product({ userID }) {
     showModal3, // State to control AuctionModal visibility
     closeModal3, // Function to close the auction modal
     selectedJewelry, // Jewelry item selected for auction
+    setSelectedJewelry,
   } = useJewelry();
 
   const [staffs, setStaffs] = useState([]);

@@ -32,6 +32,10 @@ const auctionSchema = new mongoose.Schema({
     type: Number,
     required: false,
   },
+  Register: {
+    type: Array,
+    required: false,
+  },
 });
 
 const Auction = mongoose.model("Auction", auctionSchema);

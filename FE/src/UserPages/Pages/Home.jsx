@@ -138,7 +138,7 @@ export default function Home() {
         expensiveItems = [sortedByPrice[1], sortedByPrice[0], auctionObject];
       } else {
         // If three or more, return the top 3 items
-        expensiveItems = sortedByPrice.slice(0, 3);
+        expensiveItems = [sortedByPrice[1], sortedByPrice[0], sortedByPrice[2]];
       }
 
       // Set the result
@@ -229,9 +229,13 @@ export default function Home() {
                               variant="outline-warning"
                               onClick={() => {
                                 const user = sessionStorage.getItem("user");
-                                if (user) {
-                                  nav(`/auction/${au.auctionStatus._id}`);
-                                } else {
+                                if (
+                                  user &&
+                                  new Date(jew.auctionStatus.endTime) >=
+                                    new Date()
+                                ) {
+                                  nav(`/auction/${jew.auctionStatus._id}`);
+                                } else if (!user) {
                                   toast.warn(
                                     <>
                                       You need to login to bid,to login please
@@ -258,6 +262,11 @@ export default function Home() {
                                       transition: Bounce,
                                     }
                                   );
+                                } else if (
+                                  new Date(jew.auctionStatus.endTime) <=
+                                  new Date()
+                                ) {
+                                  toast.warn(<>The auction has ended</>);
                                 }
                               }}
                             >
@@ -283,6 +292,17 @@ export default function Home() {
                 </Col>
               ))}
           </Row>
+          {newjew.length == 0 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "50px 20px",
+              }}
+            >
+              <span>No jewelry available</span>
+            </div>
+          )}
         </Col>
       </Row>
 

@@ -103,7 +103,7 @@ const jewelrySchema = new mongoose.Schema({
     required: true,
   },
   feedback: {
-    type: Array,
+    type: String,
     required: false,
   },
   statusUpdateDate: {

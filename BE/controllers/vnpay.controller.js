@@ -4,16 +4,19 @@ const config = require("../vnpay/vnpay.config.js"); // Make sure to have the con
 const moment = require("moment");
 const crypto = require("crypto");
 const querystring = require("qs");
-
+let userInformation = null;
 const {
   getPaymentByAuctionID,
   UpdatePaymentByAuctionID,
 } = require("./payment.controller.js");
-const { updateUserBalance, getAdmin } = require("./users.controller.js");
+const {
+  updateUserBalance,
+  getAdmin,
+} = require("../repositories/user.repository.js");
 // Frontend-friendly payment handler
 
-const handlePaymentProcessing = async (auctionId, amount) => {
-  if (!auctionId || !amount || amount <= 0) {
+const handlePaymentProcessing = async (auctionId, amount, userInfo) => {
+  if (!auctionId || !amount || amount <= 0 || !userInfo) {
     return { success: false, message: "Invalid auctionId or amount" };
   }
 
@@ -52,6 +55,7 @@ const handlePaymentProcessing = async (auctionId, amount) => {
         status: "Completed",
         jewelryStatus: "Packaging",
         paytime: new Date(),
+        detail: userInfo,
       };
 
       // Call UpdatePaymentByAuctionID instead of making a PUT request
@@ -59,7 +63,7 @@ const handlePaymentProcessing = async (auctionId, amount) => {
         auctionId,
         updatedPaymentData
       );
-
+      userInformation = null;
       // Check if the update was successful
       if (updatedPayment) {
         console.log("Payment updated successfully:", updatedPayment);
@@ -98,7 +102,7 @@ exports.createPaymentUrl = (req, res) => {
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
-
+  userInformation = req.body.userInfo;
   const tmnCode = config.vnp_TmnCode;
   const secretKey = config.vnp_HashSecret;
   const returnUrl = config.vnp_ReturnUrl;
@@ -133,9 +137,6 @@ exports.createPaymentUrl = (req, res) => {
   res.status(200).json({ url: vnpUrl });
 };
 
-// Function to handle the return from VNPAY
-// Function to handle the return from VNPAY
-// Function to handle the return from VNPAY
 exports.vnpayReturn = async (req, res) => {
   let vnp_Params = req.query;
   const secureHash = vnp_Params["vnp_SecureHash"];
@@ -172,7 +173,11 @@ exports.vnpayReturn = async (req, res) => {
         console.log("Amount:", amount);
 
         // Call the handlePaymentProcessing function
-        const paymentResult = await handlePaymentProcessing(auctionId, amount);
+        const paymentResult = await handlePaymentProcessing(
+          auctionId,
+          amount,
+          userInformation
+        );
         console.log(paymentResult);
         if (paymentResult.success) {
           console.log("Payment processing successful:", paymentResult.message);

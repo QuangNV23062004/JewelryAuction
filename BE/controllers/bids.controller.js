@@ -1,54 +1,27 @@
-const Bid = require("../models/bid.model");
+// File: controllers/bid.controller.js
+const bidServices = require("../services/bid.services");
 
 const createBid = async (req, res) => {
   try {
-    const bid = await Bid.create(req.body);
+    const bid = await bidServices.createBid(req.body);
     res.status(201).json(bid);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-const createBid2 = async (bidData) => {
-  console.log("createBid2");
-  try {
-    const bid = await Bid.create(bidData);
-    return bid;
-  } catch (error) {
-    throw new Error("Error creating bid: " + error.message);
-  }
-};
-const getAllBidWithAuctionId = async (auctionID) => {
-  try {
-    const bids = await Bid.find({ auctionID: auctionID }).sort({
-      bidAmount: -1,
-    });
-
-    if (bids.length === 0) {
-      console.log("No bids found with auctionID: " + auctionID);
-      return [];
-    }
-
-    return bids;
-  } catch (error) {
-    console.error(
-      "Error getting bids for auction: " + auctionID,
-      error.message
-    );
-    throw new Error("Error getting bids: " + error.message); // Properly throw the error
-  }
-};
 
 const getAllBid = async (req, res) => {
   try {
-    const bid = await Bid.find();
+    const bid = await bidServices.getAllBid();
     res.status(200).json(bid);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 const getBid = async (req, res) => {
   try {
-    const bid = await Bid.findById(req.params.id);
+    const bid = await bidServices.getBid(req.params.id);
     if (!bid) {
       return res.status(404).json({ message: "Bid not found" });
     }
@@ -57,11 +30,10 @@ const getBid = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const updateBid = async (req, res) => {
   try {
-    const bid = await Bid.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const bid = await bidServices.updateBid(req.params.id, req.body);
     if (!bid) {
       return res.status(404).json({ message: "Bid not found" });
     }
@@ -70,9 +42,10 @@ const updateBid = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const deleteBid = async (req, res) => {
   try {
-    const bid = await Bid.findByIdAndDelete(req.params.id);
+    const bid = await bidServices.deleteBid(req.params.id);
     if (!bid) {
       return res.status(404).json({ message: "Bid not found" });
     }
@@ -81,24 +54,11 @@ const deleteBid = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-const updateAllBidToOutbid = async (auctionID) => {
-  console.log("Outbided all bid with id: " + auctionID);
-  try {
-    await Bid.updateMany(
-      { auctionID: auctionID, status: "Winning" },
-      { status: "Outbid" }
-    );
-  } catch (error) {
-    console.log("Error updating bids to Outbid: " + err.message);
-  }
-};
+
 module.exports = {
   createBid,
-  createBid2,
   getAllBid,
   getBid,
   updateBid,
   deleteBid,
-  updateAllBidToOutbid,
-  getAllBidWithAuctionId,
 };

@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 const moment = require("moment-timezone");
-const { UpdateAllAuctions } = require("../controllers/auctions.controller");
+const { updateAllAuctions } = require("../repositories/auction.repository");
 
 let isJobRunning = false; // Flag to prevent overlapping executions
 
@@ -20,7 +20,7 @@ cron.schedule(
     try {
       const start = moment().tz("Asia/Ho_Chi_Minh").valueOf(); // Get the current time in milliseconds in the correct timezone
 
-      await UpdateAllAuctions();
+      await updateAllAuctions();
 
       const end = moment().tz("Asia/Ho_Chi_Minh").valueOf();
       const endTime = moment().tz("Asia/Ho_Chi_Minh").format();

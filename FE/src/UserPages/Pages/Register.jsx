@@ -6,7 +6,9 @@ import mongoose from "mongoose";
 import DistrictData from "../../Resources/District";
 import ProvinceData from "../../Resources/Province";
 import WardData from "../../Resources/Wards";
-
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Link, useNavigate } from "react-router-dom";
 const RegisterContainer = styled(Container)`
   background-color: #f8f9fa;
   border-radius: 10px;
@@ -116,11 +118,11 @@ export default function Register() {
     status: "Pending",
     image: "",
     category: "",
-    feedback: [],
+    feedback: "",
     statusUpdateDate: new Date(),
     createAt: new Date(),
   });
-
+  const nav = useNavigate();
   const [provinceOptions, setProvinceOptions] = useState([]);
   const [districtOptions, setDistrictOptions] = useState([]);
   const [wardOptions, setWardOptions] = useState([]);
@@ -196,8 +198,81 @@ export default function Register() {
   };
 
   const handleSubmit = async () => {
+    // Validation for required fields
     if (!jewelry.owner.ownerID || !jewelry.owner.address) {
-      alert("Owner ID and address are required.");
+      toast.warn(
+        <>
+          You need to login to bid,to login please click{" "}
+          <Link
+            to="/login"
+            style={{
+              color: "white",
+              cursor: "pointer",
+            }}
+          >
+            here
+          </Link>
+        </>,
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        }
+      );
+      return;
+    }
+
+    if (
+      !jewelry.image ||
+      !/^https?:\/\/[^\s$.?#].[^\s]*$/.test(jewelry.image)
+    ) {
+      toast.warn("Please provide a valid image URL.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      return;
+    }
+
+    if (!jewelry.category) {
+      toast.warn("Please select a category.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      return;
+    }
+
+    if (!provinceId || !districtId || !wardId) {
+      toast.warn("Please select a valid Province, District, and Ward.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
       return;
     }
 
@@ -257,14 +332,33 @@ export default function Register() {
         updatedJewelry
       );
       console.log("Data created successfully:", response.data);
+      toast.success("Jewelry registered", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      nav("/");
     } catch (error) {
-      console.error("Error creating data:", error);
+      console.error(
+        "Error creating data:",
+        error.response?.data || error.message
+      );
+      alert(
+        "Failed to create jewelry: " +
+          (error.response?.data?.message || error.message)
+      );
     }
-    console.log(updatedJewelry);
   };
 
   return (
     <RegisterContainer>
+      <ToastContainer></ToastContainer>
       <Title>Put jewelry up for auction</Title>
       <FormRow>
         <FormWrapper>

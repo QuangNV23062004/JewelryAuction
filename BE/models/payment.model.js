@@ -43,6 +43,10 @@ const paymentSchema = new mongoose.Schema({
     enum: ["Payment", "Payout"],
     required: true,
   },
+  detail: {
+    type: Object,
+    required: false,
+  },
 });
 
 const Payment =
