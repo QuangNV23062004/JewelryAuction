@@ -157,9 +157,9 @@ export default function Auction() {
                               startTime={au.auctionStatus.startTime}
                               endTime={au.auctionStatus.endTime}
                               winner={au.auctionStatus?.winner || null}
-                              status={au.paymentDetails.status}
+                              status={au.paymentDetails?.status || null}
                             />
-                            {au.paymentDetails.status == "Completed" &&
+                            {au.paymentDetails?.status == "Completed" &&
                               user &&
                               user._id == au.auctionStatus.winner && (
                                 <Button variant="success">
@@ -306,10 +306,10 @@ export default function Auction() {
                                 startTime={au.auctionStatus.startTime}
                                 endTime={au.auctionStatus.endTime}
                                 winner={au.auctionStatus?.winner || null}
-                                status={au.paymentDetails.status}
+                                status={au.paymentDetails?.status || null}
                               />
                               {user &&
-                                au.paymentDetails.status == "Completed" &&
+                                au.paymentDetails?.status == "Completed" &&
                                 user._id == au.auctionStatus.winner && (
                                   <Button variant="success">
                                     Payment Completed
@@ -333,7 +333,7 @@ export default function Auction() {
               </Card>
             </Col>
           ))}
-        {auctions.length === 0 && cat !== null ? (
+        {auctions.length === 0 && cat !== null && cat !== "" ? (
           <Row
             style={{
               height: 500,

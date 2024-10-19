@@ -127,7 +127,7 @@ const CountdownTimer = ({ startTime, endTime, user, winner, status }) => {
       <>
         <span>Auction has ended</span>
         <br />
-        {isWinner && status === "Pending" && (
+        {isWinner && status && status === "Pending" && (
           <span>
             You have {renderCheckoutTimerComponents()} to checkout, or your bid
             will be invalid.

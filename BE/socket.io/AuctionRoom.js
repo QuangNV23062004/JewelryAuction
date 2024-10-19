@@ -1,7 +1,7 @@
 const {
-  createBid2,
+  createBid,
   updateAllBidToOutbid,
-} = require("../controllers/bids.controller");
+} = require("../repositories/bid.repository");
 const Auction = require("../models/auction.model");
 
 module.exports = function (io) {
@@ -39,7 +39,7 @@ module.exports = function (io) {
           bid.status = "Outbid";
         }
 
-        const newBid = await createBid2(bid);
+        const newBid = await createBid(bid);
 
         socket.to(roomId).emit("newBid", {
           amount: newBid.bidAmount,

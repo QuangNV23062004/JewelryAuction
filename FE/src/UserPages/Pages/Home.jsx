@@ -53,7 +53,16 @@ export default function Home() {
   const [jewelry, setJewelry] = useState([]);
   const [newjew, setNewJew] = useState([]);
   const [expensive, setExpensive] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([
+    "Necklace",
+    "Ring",
+    "Earring",
+    "Bracelet",
+    "Brooch",
+    "Pendant",
+    "Anklet",
+    "Cufflink",
+  ]);
   const [feedback, setFeedback] = useState([]);
   const [auctions, setAuctions] = useState([]);
   const nav = useNavigate();
@@ -108,9 +117,10 @@ export default function Home() {
       let expensiveItems;
       const auctionObject = {
         _id: null,
-        name: null,
+        name: "no item",
         description: null,
-        image: null,
+        image:
+          "https://hesolutions.com.pk/wp-content/uploads/2019/01/picture-not-available.jpg",
         category: null,
         status: null,
         owner: null,
@@ -129,8 +139,9 @@ export default function Home() {
           currentBid: null,
         },
       };
-
-      if (sortedByPrice.length === 1) {
+      if (!sortedByPrice || sortedByPrice.length === 0) {
+        expensiveItems = [auctionObject, auctionObject, auctionObject];
+      } else if (sortedByPrice.length === 1) {
         // If only one item, create two nulls, put the item in the second position
         expensiveItems = [auctionObject, sortedByPrice[0], auctionObject];
       } else if (sortedByPrice.length === 2) {
@@ -140,14 +151,10 @@ export default function Home() {
         // If three or more, return the top 3 items
         expensiveItems = [sortedByPrice[1], sortedByPrice[0], sortedByPrice[2]];
       }
-
+      console.log(expensiveItems);
       // Set the result
       setExpensive(expensiveItems);
       // Extract unique categories
-      const uniqueCategories = [
-        ...new Set(fetchedJewelry.map((item) => item.category)),
-      ];
-      setCategories(uniqueCategories);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
