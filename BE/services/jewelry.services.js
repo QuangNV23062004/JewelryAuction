@@ -26,9 +26,18 @@ const getJewelryWithAuction = async () => {
 };
 
 const getJewelryByStatus = async (statuses) => {
+  if (typeof statuses === "string" && statuses.includes(",")) {
+    statuses = statuses.split(","); // Split into an array by comma
+  }
   return await jewelryRepository.getJewelryByStatus(statuses);
 };
 
+const getJewelryStaffStatus = async (userId, statuses, type) => {
+  if (typeof statuses === "string" && statuses.includes(",")) {
+    statuses = statuses.split(","); // Split into an array by comma
+  }
+  return await jewelryRepository.getJewelryStaffStatus(userId, statuses, type);
+};
 module.exports = {
   createJewelry,
   getAllJewelry,
@@ -37,4 +46,5 @@ module.exports = {
   deleteJewelry,
   getJewelryWithAuction,
   getJewelryByStatus,
+  getJewelryStaffStatus,
 };

@@ -42,8 +42,9 @@ export default function Header() {
     nav("/manager/login");
   };
   useEffect(() => {
-    const user = sessionStorage.getItem("user");
+    const user = JSON.parse(sessionStorage.getItem("user"));
     setName(user.fullName);
+    console.log(user.fullName || null);
   }, []);
   return (
     <Row style={headerStyles}>

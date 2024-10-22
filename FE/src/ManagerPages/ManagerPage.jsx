@@ -3,7 +3,7 @@ import Product from "./Pages/components/Product";
 import { Col, Row } from "react-bootstrap";
 import Header from "./Pages/components/Header";
 import SideBar from "./Pages/components/SideBar";
-import Buttons from "./Pages/components/Buttons";
+
 import { JewelryProvider } from "./Pages/components/JewelryProvider";
 
 export default function ManagerPage() {

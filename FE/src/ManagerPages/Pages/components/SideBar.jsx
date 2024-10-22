@@ -5,7 +5,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 
 const sidebarStyles = {
   paddingTop: 10,
-  backgroundColor: "rgba(13, 110, 253, 0.8)", // Light background for the sidebar
+  backgroundColor: "rgb(0, 48, 143)", // Light background for the sidebar
   minHeight: "100vh", // Full height
   color: "#343a40", // Dark text
 };
@@ -23,7 +23,7 @@ const listItemStyles = {
 
 const linkStyles = {
   textDecoration: "none",
-  color: "rgba(13, 110, 253, 0.8)", // Dark text for links
+  color: "rgb(0, 48, 143) ", // Dark text for links
   fontSize: "18px",
   flexGrow: 1,
 };

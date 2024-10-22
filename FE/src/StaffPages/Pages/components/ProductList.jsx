@@ -3,6 +3,7 @@ import { Button, Col, Row } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useJewelry } from "../../../ManagerPages/Pages/components/JewelryProvider";
+import axios from "axios";
 
 export default function ProductList() {
   const {
@@ -11,7 +12,7 @@ export default function ProductList() {
     openModal2,
     confirmArrival,
     UnconfirmArrival,
-    selected, // The selected pill state
+    selected,
   } = useJewelry();
   const loc = useLocation();
   const url = loc.pathname;
@@ -40,58 +41,80 @@ export default function ProductList() {
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (user && jewelry.length) {
-      const filtered = jewelry.filter((j) => {
-        const valuationStaffId = j.assignedTo?.ValuationStaff?.toString();
-        const auctionStaffId = j.assignedTo?.AuctionStaff?.toString();
-        const deliveryStaffId = j.assignedTo?.DeliveryStaff?.toString();
+      let statuses = "all";
+      let type = "all";
 
-        // Filtering based on the URL and selected pill
-        if (url === "/staff/Valuation") {
-          if (valuationStaffId === user._id) {
-            if (selected === "Preliminary") return j.status === "Pending";
-            if (selected === "Waiting")
-              return (
-                j.status === "Jewelry Sent" ||
-                j.status === "Preliminary Valuation Requested"
-              );
-            if (selected === "Final")
-              return (
-                j.status === "Jewelry Arrival Confirmed" ||
-                j.status === "Final Valuation Rejected"
-              );
-            if (selected === "Confirmation")
-              return (
-                j.status === "Final Valuation" ||
-                j.status === "Final Valuation Confirmed" ||
-                j.status === "Approved" ||
-                j.status === "Rejected"
-              );
-          }
+      if (url === "/staff/Valuation") {
+        type = "valuation";
+        switch (selected) {
+          case "Preliminary":
+            statuses = "Pending";
+            break;
+          case "Waiting":
+            statuses = "Jewelry Sent,Preliminary Valuation Requested";
+            break;
+          case "Final":
+            statuses = "Jewelry Arrival Confirmed,Final Valuation Rejected";
+            break;
+          case "Confirmation":
+            statuses =
+              "Final Valuation, Final Valuation Confirmed, Approved, Rejected";
+            break;
+          default:
+            statuses = "all"; // Default fallback status
+            break;
         }
+      }
 
-        if (url === "/staff/Auction") {
-          if (auctionStaffId === user._id) {
-            if (selected === "Schedule") return j.status === "Scheduled";
-            if (selected === "Ongoing") return j.status === "Scheduled";
-          }
+      if (url === "/staff/Auction") {
+        type = "auction";
+        switch (selected) {
+          case "Schedule":
+            statuses = "Scheduled";
+            break;
+          case "Ongoing":
+            statuses = "Ongoing";
+            break;
+          default:
+            statuses = "all"; // Default fallback status
+            break;
         }
+      }
 
-        if (url === "/staff/Delivery") {
-          if (deliveryStaffId === user._id) {
-            if (selected === "Current") return j.status === "Auctioned";
-            if (selected === "Completed") return j.status === "Sold";
-          }
+      if (url === "/staff/Delivery") {
+        type = "delivery";
+        switch (selected) {
+          case "Current":
+            statuses = "Delivery";
+            break;
+          case "Completed":
+            statuses = "Delivered";
+            break;
+          default:
+            statuses = "all"; // Default fallback status
+            break;
         }
+      }
 
-        // Default case when no specific pill is selected
-        return (
-          valuationStaffId === user._id ||
-          auctionStaffId === user._id ||
-          deliveryStaffId === user._id
-        );
-      });
-
-      setFilteredJewelry(filtered);
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:5000/jewelry/staff/by-status",
+            {
+              params: {
+                userId: user._id,
+                statuses: statuses,
+                type: type,
+              },
+            }
+          );
+          console.log(response.data);
+          setFilteredJewelry(response.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      fetchData();
     }
   }, [jewelry, url, selected]); // Listen to `jewelry`, `url`, and `selected` for changes
 
@@ -167,134 +190,135 @@ export default function ProductList() {
   };
   return (
     <>
-      {filteredJewelry.map((jew) => (
-        <Card
-          style={{
-            width: "95%",
-            height: 150,
-            margin: "10px 30px",
-            boxShadow: "0 1px 5px -2px black",
-          }}
-          key={jew._id}
-        >
-          <Row>
-            <Col md={2}>
-              <div>
-                <Card.Img
-                  variant="top"
-                  src={jew.image}
+      {filteredJewelry.length > 0 &&
+        filteredJewelry.map((jew) => (
+          <Card
+            style={{
+              width: "95%",
+              height: 150,
+              margin: "10px 30px",
+              boxShadow: "0 1px 5px -2px black",
+            }}
+            key={jew._id}
+          >
+            <Row>
+              <Col md={2}>
+                <div>
+                  <Card.Img
+                    variant="top"
+                    src={jew.image}
+                    style={{
+                      height: 148,
+                      width: 200,
+                      borderRadius: 5,
+                      position: "relative",
+                    }}
+                  />
+                </div>
+              </Col>
+              <Col
+                md={10}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                }}
+              >
+                <Card.Body
                   style={{
-                    height: 148,
-                    width: 200,
-                    borderRadius: 5,
-                    position: "relative",
+                    width: "90%",
+                    display: "flex",
+                    justifyContent: "start",
+                    alignItems: "center",
                   }}
-                />
-              </div>
-            </Col>
-            <Col
-              md={10}
-              style={{
-                display: "flex",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-              }}
-            >
-              <Card.Body
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  justifyContent: "start",
-                  alignItems: "center",
-                }}
-              >
-                <Card.Title>
-                  <h2>{jew.name}</h2>
-                  <br />
-                  <span>Status: {DisplayStatus(jew.status)}</span>
-                </Card.Title>
-              </Card.Body>
+                >
+                  <Card.Title>
+                    <h2>{jew.name}</h2>
+                    <br />
+                    <span>Status: {DisplayStatus(jew.status)}</span>
+                  </Card.Title>
+                </Card.Body>
 
-              <Card.Body
-                style={{
-                  width: "30%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {jew.status === "Pending" && (
-                  <Button
-                    variant="outline-primary"
-                    style={{ width: 200 }}
-                    onClick={() => openModal(jew)}
-                  >
-                    Preliminary valuation
-                  </Button>
-                )}
-                {(jew.status === "Preliminary Valuation Requested" ||
-                  jew.status === "Jewelry Sent") && (
-                  <>
+                <Card.Body
+                  style={{
+                    width: "30%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  {jew.status === "Pending" && (
                     <Button
                       variant="outline-primary"
                       style={{ width: 200 }}
-                      onClick={() => confirmArrival(jew)}
+                      onClick={() => openModal(jew)}
                     >
-                      Confirm arrival
+                      Preliminary valuation
                     </Button>
-                  </>
-                )}
-                {jew.status === "Jewelry Arrival Confirmed" && (
-                  <>
-                    <Button
-                      variant="outline-primary"
-                      style={{ width: 200 }}
-                      onClick={() => UnconfirmArrival(jew)}
-                    >
-                      Unconfirm arrival
+                  )}
+                  {(jew.status === "Preliminary Valuation Requested" ||
+                    jew.status === "Jewelry Sent") && (
+                    <>
+                      <Button
+                        variant="outline-primary"
+                        style={{ width: 200 }}
+                        onClick={() => confirmArrival(jew)}
+                      >
+                        Confirm arrival
+                      </Button>
+                    </>
+                  )}
+                  {jew.status === "Jewelry Arrival Confirmed" && (
+                    <>
+                      <Button
+                        variant="outline-primary"
+                        style={{ width: 200 }}
+                        onClick={() => UnconfirmArrival(jew)}
+                      >
+                        Unconfirm arrival
+                      </Button>
+                      <Button
+                        variant="outline-primary"
+                        style={{ width: 200 }}
+                        onClick={() => openModal2(jew)}
+                      >
+                        Final Valuation
+                      </Button>
+                    </>
+                  )}
+                  {jew.status === "Final Valuation" && (
+                    <Button variant="outline-warning" style={{ width: 300 }}>
+                      Waiting for manager's confirmation
                     </Button>
-                    <Button
-                      variant="outline-primary"
-                      style={{ width: 200 }}
-                      onClick={() => openModal2(jew)}
-                    >
-                      Final Valuation
-                    </Button>
-                  </>
-                )}
-                {jew.status === "Final Valuation" && (
-                  <Button variant="outline-warning" style={{ width: 300 }}>
-                    Waiting for manager's confirmation
-                  </Button>
-                )}
-                {jew.status === "Final Valuation Rejected" && (
-                  <div>
-                    <span>
-                      Last valuation:{" "}
-                      <b style={{ fontWeight: 700, color: "red" }}>
-                        ${jew.auctionDetails.finalValuation.value}
-                      </b>
-                      <br />
-                      Status:{" "}
-                      <b style={{ fontWeight: 700, color: "red" }}>
-                        {jew.status}
-                      </b>
-                    </span>
+                  )}
+                  {jew.status === "Final Valuation Rejected" && (
+                    <div>
+                      <span>
+                        Last valuation:{" "}
+                        <b style={{ fontWeight: 700, color: "red" }}>
+                          ${jew.auctionDetails.finalValuation.value}
+                        </b>
+                        <br />
+                        Status:{" "}
+                        <b style={{ fontWeight: 700, color: "red" }}>
+                          {jew.status}
+                        </b>
+                      </span>
 
-                    <Button
-                      variant="outline-warning"
-                      style={{ width: 200 }}
-                      onClick={() => openModal2(jew)}
-                    >
-                      Revaluate
-                    </Button>
-                  </div>
-                )}
-              </Card.Body>
-            </Col>
-          </Row>
-        </Card>
-      ))}
+                      <Button
+                        variant="outline-warning"
+                        style={{ width: 200 }}
+                        onClick={() => openModal2(jew)}
+                      >
+                        Revaluate
+                      </Button>
+                    </div>
+                  )}
+                </Card.Body>
+              </Col>
+            </Row>
+          </Card>
+        ))}
     </>
   );
 }

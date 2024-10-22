@@ -71,6 +71,27 @@ const getJewelryByStatus = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const getJewelryStaffStatus = async (req, res) => {
+  const { userId, statuses, type } = req.query;
+  console.log(userId, "status:", statuses, "type:", type);
+  if (!userId || !statuses || !type) {
+    console.log("missing", userId, statuses, type);
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  try {
+    const jewelry = await jewelryService.getJewelryStaffStatus(
+      userId,
+      statuses,
+      type
+    );
+    if (!jewelry) {
+      return res.status(404).json({ message: "Jewelry not found" });
+    }
+    res.status(200).json(jewelry);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   createJewelry,
@@ -80,4 +101,5 @@ module.exports = {
   deleteJewelry,
   getJewelryWithAuction,
   getJewelryByStatus,
+  getJewelryStaffStatus,
 };

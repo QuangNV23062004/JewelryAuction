@@ -8,6 +8,7 @@ const {
   updateJewelry,
   getJewelryWithAuction,
   getJewelryByStatus,
+  getJewelryStaffStatus,
 } = require("../controllers/jewelries.controller");
 
 // Route to get jewelry with associated auction data
@@ -17,6 +18,7 @@ router.get("/with-auction", getJewelryWithAuction);
 router.get("/by-status", getJewelryByStatus);
 router.get("/", getAllJewelry);
 
+router.get("/staff/by-status", getJewelryStaffStatus);
 // Route to get a specific piece of jewelry by ID
 router.get("/:id", getJewelry);
 

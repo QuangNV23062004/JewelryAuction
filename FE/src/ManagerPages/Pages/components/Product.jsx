@@ -13,10 +13,8 @@ import AuctionModal from "./AuctionModal"; // Import the AuctionModal
 
 export default function Product({ userID }) {
   const {
-    jewelry,
-    setJewelry,
+    original,
     setOriginal,
-    selected,
     ManagerApprove,
     ManagerReject,
     openModal3, // Function to open the auction modal
@@ -31,6 +29,58 @@ export default function Product({ userID }) {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const loc = useLocation();
   const path = loc.pathname;
+
+  // Map route to statuses for API query
+  const getStatusesByPath = (path) => {
+    switch (path) {
+      case "/manager/New":
+        return ["Pending"];
+      case "/manager/Valuating":
+        return [
+          "Preliminary Valuation Requested",
+          "Jewelry Sent",
+          "Jewelry Arrival Confirmed",
+          "Final Valuation",
+          "Final Valuation Rejected",
+        ];
+      case "/manager/Confirm":
+        return ["Final Valuation Confirmed", "Approved", "Rejected"];
+      case "/manager/Auctioning":
+        return ["Scheduled", "Auctioned", "Sold"];
+      default:
+        return [];
+    }
+  };
+
+  // Fetch data from the server based on the path's statuses
+  const fetchData = async () => {
+    try {
+      const statuses = getStatusesByPath(path);
+      if (statuses.length > 0) {
+        const response = await axios.get(
+          `http://localhost:5000/jewelry/by-status`,
+          {
+            params: { status: statuses.join(",") }, // Send multiple statuses as a query param
+          }
+        );
+        const sortedJewelry = response.data.sort(
+          (a, b) => new Date(b.createAt) - new Date(a.createAt)
+        );
+        setOriginal(sortedJewelry); // Store original data
+      }
+
+      // Fetch staff data
+      const response2 = await axios.get("http://localhost:5000/user");
+      setStaffs(response2.data.filter((st) => st.role === 2));
+    } catch (error) {
+      console.error("Error fetching data: " + error);
+    }
+  };
+
+  // Fetch data when the path changes
+  useEffect(() => {
+    fetchData();
+  }, [path]); // Re-fetch data whenever the path changes
 
   const handleAssignModalClose = () => setShowAssignModal(false);
   const handleAssignModalShow = (item) => {
@@ -55,58 +105,6 @@ export default function Product({ userID }) {
       console.error("Error assigning staff: " + error);
     }
   };
-
-  const getStatusesByPath = (path) => {
-    switch (path) {
-      case "/manager/New":
-        return ["Pending"];
-      case "/manager/Valuating":
-        return [
-          "Preliminary Valuation Requested",
-          "Jewelry Sent",
-          "Jewelry Arrival Confirmed",
-          "Final Valuation",
-          "Final Valuation Rejected",
-        ];
-      case "/manager/Confirm":
-        return ["Final Valuation Confirmed", "Approved", "Rejected"];
-      case "/manager/Auctioning":
-        return ["Scheduled", "Auctioned", "Sold"];
-      default:
-        return [];
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/jewelry");
-      const statuses = getStatusesByPath(path);
-      const filteredJewelry = response.data
-        .filter((j) => statuses.includes(j.status))
-        .sort((a, b) => new Date(b.createAt) - new Date(a.createAt));
-
-      setOriginal(filteredJewelry);
-      applyFilter(selected, filteredJewelry); // Apply the current selected filter
-      const response2 = await axios.get("http://localhost:5000/user");
-      setStaffs(response2.data.filter((st) => st.role === 2));
-    } catch (error) {
-      console.error("Error fetching data: " + error);
-    }
-  };
-
-  const applyFilter = (selectedFilter, data = original) => {
-    if (selectedFilter === "Assigned") {
-      setJewelry(data.filter((j) => j.assignedTo?.ValuationStaff));
-    } else if (selectedFilter === "Unassigned") {
-      setJewelry(data.filter((j) => !j.assignedTo?.ValuationStaff));
-    } else {
-      setJewelry(data); // Reset to original jewelry when "All" is selected
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [path]); // Re-fetch data whenever the path changes
 
   const getStaffName = (id) => {
     const staff = staffs.find((staff) => staff._id === id);
@@ -224,8 +222,8 @@ export default function Product({ userID }) {
       </div>
       <h1 style={{ margin: "40px 0px" }}>Product List</h1>
       <ul>
-        {jewelry &&
-          jewelry.map((item) => (
+        {original &&
+          original.map((item) => (
             <Card
               style={{
                 width: "95%",
