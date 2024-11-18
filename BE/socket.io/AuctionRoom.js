@@ -23,7 +23,7 @@ module.exports = function (io) {
           console.log("no auctionID");
           return socket.emit("error", "Auction not found");
         }
-        if (new Date(auction.endTime) > new Date()) {
+        if (new Date(auction.endTime) < new Date()) {
           console.log("no auctionID");
           return socket.emit("error", "Auction has ended");
         }

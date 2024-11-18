@@ -69,7 +69,7 @@ const AuctionRoom = () => {
       alert("User or auction information is missing.");
       return;
     }
-
+    console.log(currentAu, user, bidAmount);
     if (bidAmount <= 0) {
       alert("Bid amount must be greater than 0.");
       return;
@@ -139,9 +139,11 @@ const AuctionRoom = () => {
                           />
                           <br />
                           Current Bid: $
-                          {currentBid?.amount ||
-                            currentAu.auctionStatus?.currentBid ||
-                            "No bids yet"}
+                          {currentBid?.amount >
+                            currentAu.auctionStatus?.currentBid || 0
+                            ? currentBid?.amount
+                            : currentAu.auctionStatus?.currentBid ||
+                              "No bids yet"}
                         </Card.Text>
                       </Card.Body>
                     </Col>

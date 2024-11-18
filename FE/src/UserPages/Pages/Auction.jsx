@@ -73,10 +73,10 @@ export default function Auction() {
       );
       const jewelry = Jewresponse.data;
       const auction = AuResponse.data;
-      // console.log("jewelry: ");
-      // console.log(jewelry);
-      // console.log("auction: ");
-      // console.log(auction);
+      console.log("jewelry: ");
+      console.log(jewelry);
+      console.log("auction: ");
+      console.log(auction);
       openModal4(auction, jewelry);
     } catch (error) {
       console.log("Error handle open Modal");
