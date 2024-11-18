@@ -8,7 +8,7 @@ const createAuction = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-//test2
+//test23
 const getAllAuction = async (req, res) => {
   try {
     const auctions = await auctionService.getAllAuction();
